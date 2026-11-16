@@ -1,7 +1,17 @@
 #[derive(PartialEq, Debug, Clone, Copy)]
-struct Entity {
+pub struct Entity {
     index: u32,
     generation: u32,
+}
+
+impl Entity {
+    pub fn new(index: u32, generation: u32) -> Self {
+        Self { index, generation }
+    }
+
+    pub fn index(&self) -> u32 {
+        self.index
+    }
 }
 
 #[derive(Default)]
@@ -37,7 +47,10 @@ impl Entities {
             }
         } else {
             let index = u32::try_from(self.slots.len()).expect("too many entities");
-            let entity = Entity { index, generation: 0 };
+            let entity = Entity {
+                index,
+                generation: 0,
+            };
 
             self.slots.push(EntitySlot {
                 generation: 0,
