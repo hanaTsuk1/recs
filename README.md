@@ -39,3 +39,18 @@
 1. **索引维护成本**：普通删除会导致后续 Dense 元素索引发生变化，因此必须更新对应的 Sparse 映射。
 2. **数据移动成本**：普通删除需要移动后续所有 Component，删除位置越靠前，移动的数据越多。
 
+
+
+sparse set 解决了单个类型 component 的存储，现在要管理不同类型的 component
+
++ 需要一种方式实现 component 到 sparse set 的映射，但不能把类型写死成确定的 component
+
+### **Component Registry**
+
+**我们怎么在一个统一的数据结构中管理不同类型的 SparseSet？**
+
++ std::any::TypeId，可以在运行时标识一个具体的类型
++ 将SparseSet\<T\>作为Trait Object 就可以统一管理
+
+
+

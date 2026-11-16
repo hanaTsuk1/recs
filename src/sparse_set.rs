@@ -1,13 +1,13 @@
 use crate::entity::Entity;
 
-struct SparseSet<T> {
+pub struct SparseSet<T> {
     sparse: Vec<Option<usize>>,
     entities: Vec<Entity>,
     dense: Vec<T>,
 }
 
 impl<T> SparseSet<T> {
-    fn new() -> Self {
+    pub fn new() -> Self {
         Self {
             sparse: vec![],
             entities: vec![],
@@ -15,11 +15,11 @@ impl<T> SparseSet<T> {
         }
     }
 
-    fn len(&self) -> usize {
+    pub fn len(&self) -> usize {
         self.entities.len()
     }
 
-    fn is_empty(&self) -> bool {
+    pub fn is_empty(&self) -> bool {
         self.entities.is_empty()
     }
 
@@ -33,7 +33,7 @@ impl<T> SparseSet<T> {
         }
     }
 
-    fn insert(&mut self, entity: Entity, component: T) -> Option<T> {
+    pub fn insert(&mut self, entity: Entity, component: T) -> Option<T> {
         if let Some(dense_index) = self.get_dense_index(entity) {
             Some(std::mem::replace(&mut self.dense[dense_index], component))
         } else {
@@ -49,17 +49,17 @@ impl<T> SparseSet<T> {
         }
     }
 
-    fn get(&self, entity: Entity) -> Option<&T> {
+    pub fn get(&self, entity: Entity) -> Option<&T> {
         let index = self.get_dense_index(entity)?;
         self.dense.get(index)
     }
 
-    fn get_mut(&mut self, entity: Entity) -> Option<&mut T> {
+    pub fn get_mut(&mut self, entity: Entity) -> Option<&mut T> {
         let index = self.get_dense_index(entity)?;
         self.dense.get_mut(index)
     }
 
-    fn remove(&mut self, entity: Entity) -> Option<T> {
+    pub fn remove(&mut self, entity: Entity) -> Option<T> {
         let index = self.get_dense_index(entity)?;
 
         self.sparse[entity.index() as usize] = None;
@@ -74,7 +74,7 @@ impl<T> SparseSet<T> {
         Some(component)
     }
 
-    fn contains(&self, entity: Entity) -> bool {
+    pub fn contains(&self, entity: Entity) -> bool {
         self.get(entity).is_some()
     }
 }
