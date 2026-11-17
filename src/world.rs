@@ -88,14 +88,8 @@ mod tests {
         let mut world = World::new();
         let entity = world.spawn((Position(3, 5), Health(100)));
 
-        assert_matches!(
-            world.get::<Position>(entity),
-            Ok(Some(Position(3, 5)))
-        );
-        assert_matches!(
-            world.get::<Health>(entity),
-            Ok(Some(Health(100)))
-        );
+        assert_matches!(world.get::<Position>(entity), Ok(Some(Position(3, 5))));
+        assert_matches!(world.get::<Health>(entity), Ok(Some(Health(100))));
     }
 
     #[test]
@@ -106,14 +100,8 @@ mod tests {
             health: Health(100),
         });
 
-        assert_matches!(
-            world.get::<Position>(entity),
-            Ok(Some(Position(3, 5)))
-        );
-        assert_matches!(
-            world.get::<Health>(entity),
-            Ok(Some(Health(100)))
-        );
+        assert_matches!(world.get::<Position>(entity), Ok(Some(Position(3, 5))));
+        assert_matches!(world.get::<Health>(entity), Ok(Some(Health(100))));
     }
 
     #[test]
@@ -125,10 +113,7 @@ mod tests {
             world.insert(entity, Position(8, 9)),
             Ok(Some(Position(1, 2)))
         );
-        assert_matches!(
-            world.get::<Position>(entity),
-            Ok(Some(Position(8, 9)))
-        );
+        assert_matches!(world.get::<Position>(entity), Ok(Some(Position(8, 9))));
     }
 
     #[test]
@@ -159,10 +144,7 @@ mod tests {
         assert_eq!(entity.index(), reused.index());
         assert_ne!(entity, reused);
 
-        assert_matches!(
-            world.get::<Position>(entity),
-            Err(RecsError::NoSuchEntity)
-        );
+        assert_matches!(world.get::<Position>(entity), Err(RecsError::NoSuchEntity));
         assert_matches!(
             world.insert(entity, Position(8, 9)),
             Err(RecsError::NoSuchEntity)
@@ -179,10 +161,7 @@ mod tests {
             world.insert(entity, Position(1, 2)),
             Err(RecsError::NoSuchEntity)
         );
-        assert_matches!(
-            world.get::<Position>(entity),
-            Err(RecsError::NoSuchEntity)
-        );
+        assert_matches!(world.get::<Position>(entity), Err(RecsError::NoSuchEntity));
         assert_matches!(
             world.get_mut::<Position>(entity),
             Err(RecsError::NoSuchEntity)
@@ -191,9 +170,6 @@ mod tests {
             world.remove::<Position>(entity),
             Err(RecsError::NoSuchEntity)
         );
-        assert_matches!(
-            world.despawn(entity),
-            Err(RecsError::NoSuchEntity)
-        );
+        assert_matches!(world.despawn(entity), Err(RecsError::NoSuchEntity));
     }
 }
