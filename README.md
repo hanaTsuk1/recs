@@ -54,3 +54,16 @@ sparse set 解决了单个类型 component 的存储，现在要管理不同类�
 
 
 
+## world
+
+现在 entity 和 component 都有了，需要一个统一管理入口
+
++ **Entity 与 Component 的一致性**：销毁 entity 也要保证对应 component 全部被销毁，entity 的有效性要传达到 component
+
+
+
+要用 entity 销毁对应 component，就得遍历storages 这个值为`Box<dyn Any>`的hashmap
+
+**只指定 entity 没有对应的 T， 要怎么通过`Box<dyn Any>`获取`SparseSet<T>` 来进行销毁呢？**
+
++ 用 trait Storage: any，得到具体的`Box<dyn Storage>`，然后让 sparse set 实现 storage，就可以通过 trait object 来调用SparseSet 的确定函数，而不需要管 T

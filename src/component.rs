@@ -5,38 +5,50 @@ use std::{
 
 use crate::{entity::Entity, sparse_set::SparseSet};
 
-struct ComponentRegistry {
-    storages: HashMap<TypeId, Box<dyn Any>>,
+trait Storage: Any {
+    fn remove_components(&mut self, entity: Entity);
+}
+
+impl<T: 'static> Storage for SparseSet<T> {
+    fn remove_components(&mut self, entity: Entity) {
+        self.remove(entity);
+    }
+}
+
+pub struct ComponentRegistry {
+    storages: HashMap<TypeId, Box<dyn Storage>>,
 }
 
 impl ComponentRegistry {
-    fn new() -> Self {
+    pub fn new() -> Self {
         Self {
             storages: HashMap::new(),
         }
     }
 
-    fn insert<T: 'static>(&mut self, entity: Entity, component: T) {
+    pub fn insert<T: 'static>(&mut self, entity: Entity, component: T) -> Option<T> {
         if let Some(storage) = self.get_storage_mut::<T>() {
-            storage.insert(entity, component);
+            storage.insert(entity, component)
         } else {
             let mut storage = SparseSet::<T>::new();
             storage.insert(entity, component);
 
             let typeid = TypeId::of::<T>();
             self.storages.insert(typeid, Box::new(storage));
+
+            None
         }
     }
 
-    fn get<T: 'static>(&self, entity: Entity) -> Option<&T> {
+    pub fn get<T: 'static>(&self, entity: Entity) -> Option<&T> {
         self.get_storage::<T>()?.get(entity)
     }
 
-    fn get_mut<T: 'static>(&mut self, entity: Entity) -> Option<&mut T> {
+    pub fn get_mut<T: 'static>(&mut self, entity: Entity) -> Option<&mut T> {
         self.get_storage_mut::<T>()?.get_mut(entity)
     }
 
-    fn remove<T: 'static>(&mut self, entity: Entity) -> Option<T> {
+    pub fn remove<T: 'static>(&mut self, entity: Entity) -> Option<T> {
         self.get_storage_mut::<T>()?.remove(entity)
     }
 
@@ -46,23 +58,27 @@ impl ComponentRegistry {
 
     fn get_storage<T: 'static>(&self) -> Option<&SparseSet<T>> {
         let typeid = TypeId::of::<T>();
-        self.storages
-            .get(&typeid)
-            .map(|s| s.downcast_ref::<SparseSet<T>>())?
+        let storage: &dyn Any = self.storages.get(&typeid)?.as_ref();
+        storage.downcast_ref::<SparseSet<T>>()
     }
 
     fn get_storage_mut<T: 'static>(&mut self) -> Option<&mut SparseSet<T>> {
         let typeid = TypeId::of::<T>();
-        self.storages
-            .get_mut(&typeid)
-            .map(|s| s.downcast_mut::<SparseSet<T>>())?
+        let storage: &mut dyn Any = self.storages.get_mut(&typeid)?.as_mut();
+        storage.downcast_mut::<SparseSet<T>>()
+    }
+
+    pub fn remove_components(&mut self, entity: Entity) {
+        for storage in self.storages.values_mut() {
+            storage.remove_components(entity);
+        }
     }
 }
-
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::assert_matches;
 
     #[derive(PartialEq, Debug)]
     struct Position {
@@ -194,5 +210,67 @@ mod tests {
 
         assert!(registry.storages.contains_key(&TypeId::of::<Position>()));
         assert!(registry.get_storage::<Position>().unwrap().is_empty());
+    }
+
+    #[test]
+    fn insert_returns_none_when_new_component() {
+        let mut registry = ComponentRegistry::new();
+        let entity = Entity::new(0, 0);
+
+        let old = registry.insert(entity, Position { x: 1.0, y: 2.0 });
+
+        assert!(old.is_none());
+    }
+
+    #[test]
+    fn insert_returns_old_component_when_replaced() {
+        let mut registry = ComponentRegistry::new();
+        let entity = Entity::new(0, 0);
+
+        registry.insert(entity, Position { x: 1.0, y: 2.0 });
+
+        let old = registry.insert(entity, Position { x: 2.0, y: 3.0 });
+
+        assert_eq!(old.unwrap().x, 1.0);
+    }
+
+    #[test]
+    fn remove_components_clears_all_types_for_entity_only() {
+        let mut registry = ComponentRegistry::new();
+        let entity = Entity::new(1, 0);
+        let other_entity = Entity::new(2, 0);
+
+        registry.insert(entity, Position { x: 1.0, y: 2.0 });
+        registry.insert(entity, Health(100));
+        registry.insert(other_entity, Position { x: 3.0, y: 4.0 });
+        registry.insert(other_entity, Health(50));
+
+        registry.remove_components(entity);
+
+        assert_matches!(registry.get::<Position>(entity), None);
+        assert_matches!(registry.get::<Health>(entity), None);
+        assert_eq!(
+            registry.get::<Position>(other_entity),
+            Some(&Position { x: 3.0, y: 4.0 })
+        );
+        assert_eq!(registry.get::<Health>(other_entity), Some(&Health(50)));
+    }
+
+    #[test]
+    fn remove_components_ignores_stale_generation() {
+        let mut registry = ComponentRegistry::new();
+        let stale_entity = Entity::new(1, 0);
+        let current_entity = Entity::new(1, 1);
+
+        registry.insert(current_entity, Position { x: 1.0, y: 2.0 });
+        registry.insert(current_entity, Health(100));
+
+        registry.remove_components(stale_entity);
+
+        assert_eq!(
+            registry.get::<Position>(current_entity),
+            Some(&Position { x: 1.0, y: 2.0 })
+        );
+        assert_eq!(registry.get::<Health>(current_entity), Some(&Health(100)));
     }
 }

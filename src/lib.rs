@@ -1,5 +1,8 @@
 #![allow(dead_code)]
 
+mod bundle;
 mod component;
-mod sparse_set;
 mod entity;
+mod error;
+mod sparse_set;
+mod world;

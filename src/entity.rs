@@ -15,7 +15,7 @@ impl Entity {
 }
 
 #[derive(Default)]
-struct Entities {
+pub struct Entities {
     slots: Vec<EntitySlot>,
     free: Vec<u32>,
 }
@@ -32,11 +32,11 @@ enum EntityState {
 }
 
 impl Entities {
-    fn new() -> Self {
+    pub fn new() -> Self {
         Self::default()
     }
 
-    fn spawn(&mut self) -> Entity {
+    pub fn spawn(&mut self) -> Entity {
         if let Some(slot_id) = self.free.pop() {
             let slot = &mut self.slots[slot_id as usize];
             slot.state = EntityState::Alive;
@@ -61,7 +61,7 @@ impl Entities {
         }
     }
 
-    fn despawn(&mut self, entity: Entity) -> bool {
+    pub fn despawn(&mut self, entity: Entity) -> bool {
         let Some(slot) = self.slots.get_mut(entity.index as usize) else {
             return false;
         };
@@ -74,7 +74,7 @@ impl Entities {
         exist
     }
 
-    fn contains(&self, entity: Entity) -> bool {
+    pub fn contains(&self, entity: Entity) -> bool {
         let Some(slot) = self.slots.get(entity.index as usize) else {
             return false;
         };
