@@ -1,4 +1,7 @@
-use crate::{component::ComponentRegistry, entity::Entity};
+use crate::{
+    component::{Component, ComponentRegistry},
+    entity::Entity,
+};
 
 pub trait Bundle {
     fn insert(self, entity: Entity, registry: &mut ComponentRegistry);
@@ -9,7 +12,7 @@ impl Bundle for () {
 }
 
 #[allow(non_snake_case)]
-impl<A: 'static> Bundle for (A,) {
+impl<A: Component> Bundle for (A,) {
     fn insert(self, entity: Entity, registry: &mut ComponentRegistry) {
         let (A,) = self;
         registry.insert(entity, A);
@@ -17,7 +20,7 @@ impl<A: 'static> Bundle for (A,) {
 }
 
 #[allow(non_snake_case)]
-impl<A: 'static, B: 'static> Bundle for (A, B) {
+impl<A: Component, B: Component> Bundle for (A, B) {
     fn insert(self, entity: Entity, registry: &mut ComponentRegistry) {
         let (A, B) = self;
         registry.insert(entity, A);

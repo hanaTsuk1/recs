@@ -54,6 +54,16 @@ sparse set 解决了单个类型 component 的存储，现在要管理不同类�
 
 
 
+### Component trait
+
+1. **Component 缺少统一的类型约束**：之前使用 `'static` 约束组件类型，没有专门的 `Component` Trait 来表达组件的身份和边界。
+2. **Bundle 不支持单个普通 Struct 自动接入**：之前主要通过 Tuple 实现 Bundle，普通 Struct 想作为单个组件使用时，缺少统一的类型约束和自动 Bundle 实现。
+3. **选择 Bevy 风格的 Component 设计，而不是 hecs 风格**：
+- Bevy 风格：`Component` 需要显式实现（后续通过 `#[derive(Component)]` 简化）。
+- hecs 风格：通过 blanket impl，让满足 `Send + Sync + 'static` 的类型自动成为 Component。
+
+
+
 ## world
 
 现在 entity 和 component 都有了，需要一个统一管理入口

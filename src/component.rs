@@ -3,13 +3,13 @@ use std::{
     collections::HashMap,
 };
 
-use crate::{entity::Entity, sparse_set::SparseSet};
+use crate::{bundle::Bundle, entity::Entity, sparse_set::SparseSet};
 
 trait Storage: Any {
     fn remove_components(&mut self, entity: Entity);
 }
 
-impl<T: 'static> Storage for SparseSet<T> {
+impl<T: Component> Storage for SparseSet<T> {
     fn remove_components(&mut self, entity: Entity) {
         self.remove(entity);
     }
@@ -26,7 +26,7 @@ impl ComponentRegistry {
         }
     }
 
-    pub fn insert<T: 'static>(&mut self, entity: Entity, component: T) -> Option<T> {
+    pub fn insert<T: Component>(&mut self, entity: Entity, component: T) -> Option<T> {
         if let Some(storage) = self.get_storage_mut::<T>() {
             storage.insert(entity, component)
         } else {
@@ -40,29 +40,29 @@ impl ComponentRegistry {
         }
     }
 
-    pub fn get<T: 'static>(&self, entity: Entity) -> Option<&T> {
+    pub fn get<T: Component>(&self, entity: Entity) -> Option<&T> {
         self.get_storage::<T>()?.get(entity)
     }
 
-    pub fn get_mut<T: 'static>(&mut self, entity: Entity) -> Option<&mut T> {
+    pub fn get_mut<T: Component>(&mut self, entity: Entity) -> Option<&mut T> {
         self.get_storage_mut::<T>()?.get_mut(entity)
     }
 
-    pub fn remove<T: 'static>(&mut self, entity: Entity) -> Option<T> {
+    pub fn remove<T: Component>(&mut self, entity: Entity) -> Option<T> {
         self.get_storage_mut::<T>()?.remove(entity)
     }
 
-    fn contains<T: 'static>(&self, entity: Entity) -> bool {
+    fn contains<T: Component>(&self, entity: Entity) -> bool {
         self.get::<T>(entity).is_some()
     }
 
-    fn get_storage<T: 'static>(&self) -> Option<&SparseSet<T>> {
+    fn get_storage<T: Component>(&self) -> Option<&SparseSet<T>> {
         let typeid = TypeId::of::<T>();
         let storage: &dyn Any = self.storages.get(&typeid)?.as_ref();
         storage.downcast_ref::<SparseSet<T>>()
     }
 
-    fn get_storage_mut<T: 'static>(&mut self) -> Option<&mut SparseSet<T>> {
+    fn get_storage_mut<T: Component>(&mut self) -> Option<&mut SparseSet<T>> {
         let typeid = TypeId::of::<T>();
         let storage: &mut dyn Any = self.storages.get_mut(&typeid)?.as_mut();
         storage.downcast_mut::<SparseSet<T>>()
@@ -72,6 +72,14 @@ impl ComponentRegistry {
         for storage in self.storages.values_mut() {
             storage.remove_components(entity);
         }
+    }
+}
+
+pub trait Component: 'static {}
+
+impl<T: Component> Bundle for T {
+    fn insert(self, entity: Entity, registry: &mut ComponentRegistry) {
+        registry.insert(entity, self);
     }
 }
 
@@ -85,9 +93,11 @@ mod tests {
         x: f32,
         y: f32,
     }
+    impl Component for Position {}
 
     #[derive(PartialEq, Debug)]
     struct Health(u32);
+    impl Component for Health {}
 
     #[test]
     fn test_insert_and_get() {

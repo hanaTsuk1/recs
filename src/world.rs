@@ -1,6 +1,6 @@
 use crate::{
     bundle::Bundle,
-    component::ComponentRegistry,
+    component::{Component, ComponentRegistry},
     entity::{Entities, Entity},
     error::{RecsError, RecsResult},
 };
@@ -39,22 +39,23 @@ impl World {
         }
     }
 
-    pub fn insert<T: 'static>(&mut self, entity: Entity, component: T) -> RecsResult<Option<T>> {
+    pub fn insert<B: Bundle>(&mut self, entity: Entity, bundle: B) -> RecsResult<()> {
         self.check(entity)?;
-        Ok(self.components.insert(entity, component))
+        bundle.insert(entity, &mut self.components);
+        Ok(())
     }
 
-    pub fn remove<T: 'static>(&mut self, entity: Entity) -> RecsResult<Option<T>> {
+    pub fn remove<T: Component>(&mut self, entity: Entity) -> RecsResult<Option<T>> {
         self.check(entity)?;
         Ok(self.components.remove(entity))
     }
 
-    pub fn get<T: 'static>(&self, entity: Entity) -> RecsResult<Option<&T>> {
+    pub fn get<T: Component>(&self, entity: Entity) -> RecsResult<Option<&T>> {
         self.check(entity)?;
         Ok(self.components.get(entity))
     }
 
-    pub fn get_mut<T: 'static>(&mut self, entity: Entity) -> RecsResult<Option<&mut T>> {
+    pub fn get_mut<T: Component>(&mut self, entity: Entity) -> RecsResult<Option<&mut T>> {
         self.check(entity)?;
         Ok(self.components.get_mut(entity))
     }
@@ -62,14 +63,18 @@ impl World {
 
 #[cfg(test)]
 mod tests {
+    use crate::component::Component;
+
     use super::*;
     use std::assert_matches;
 
     #[derive(Debug, PartialEq)]
     struct Position(i32, i32);
+    impl Component for Position {}
 
     #[derive(Debug, PartialEq)]
     struct Health(u32);
+    impl Component for Health {}
 
     struct ActorBundle {
         position: Position,
@@ -81,6 +86,15 @@ mod tests {
             registry.insert(entity, self.position);
             registry.insert(entity, self.health);
         }
+    }
+
+    #[test]
+    fn spawn_inserts_single_component_bundle() {
+        let mut world = World::new();
+
+        let entity = world.spawn(Position(3, 5));
+
+        assert_matches!(world.get::<Position>(entity), Ok(Some(Position(3, 5))));
     }
 
     #[test]
@@ -102,18 +116,6 @@ mod tests {
 
         assert_matches!(world.get::<Position>(entity), Ok(Some(Position(3, 5))));
         assert_matches!(world.get::<Health>(entity), Ok(Some(Health(100))));
-    }
-
-    #[test]
-    fn insert_returns_replaced_component() {
-        let mut world = World::new();
-        let entity = world.spawn((Position(1, 2),));
-
-        assert_matches!(
-            world.insert(entity, Position(8, 9)),
-            Ok(Some(Position(1, 2)))
-        );
-        assert_matches!(world.get::<Position>(entity), Ok(Some(Position(8, 9))));
     }
 
     #[test]
