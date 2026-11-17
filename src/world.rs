@@ -63,18 +63,16 @@ impl World {
 
 #[cfg(test)]
 mod tests {
-    use crate::component::Component;
+    use crate::Component;
 
     use super::*;
     use std::assert_matches;
 
-    #[derive(Debug, PartialEq)]
+    #[derive(Debug, PartialEq, Component)]
     struct Position(i32, i32);
-    impl Component for Position {}
 
-    #[derive(Debug, PartialEq)]
+    #[derive(Debug, PartialEq, Component)]
     struct Health(u32);
-    impl Component for Health {}
 
     struct ActorBundle {
         position: Position,

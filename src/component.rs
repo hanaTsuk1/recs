@@ -85,19 +85,19 @@ impl<T: Component> Bundle for T {
 
 #[cfg(test)]
 mod tests {
+    use crate::Component;
+
     use super::*;
     use std::assert_matches;
 
-    #[derive(PartialEq, Debug)]
+    #[derive(PartialEq, Debug, Component)]
     struct Position {
         x: f32,
         y: f32,
     }
-    impl Component for Position {}
 
-    #[derive(PartialEq, Debug)]
+    #[derive(PartialEq, Debug, Component)]
     struct Health(u32);
-    impl Component for Health {}
 
     #[test]
     fn test_insert_and_get() {

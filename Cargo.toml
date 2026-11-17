@@ -3,4 +3,12 @@ name = "recs"
 version = "0.1.0"
 edition = "2024"
 
+[workspace]
+members = [
+    ".",
+    "macro",
+]
+resolver = "3"
+
 [dependencies]
+recs-macro = { path = "macro" }
