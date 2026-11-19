@@ -1,3 +1,5 @@
+use variadics_please::all_tuples;
+
 use crate::{
     component::{Component, ComponentRegistry},
     entity::Entity,
@@ -11,19 +13,18 @@ impl Bundle for () {
     fn insert(self, _entity: Entity, _registry: &mut ComponentRegistry) {}
 }
 
-#[allow(non_snake_case)]
-impl<A: Component> Bundle for (A,) {
-    fn insert(self, entity: Entity, registry: &mut ComponentRegistry) {
-        let (A,) = self;
-        registry.insert(entity, A);
-    }
+macro_rules! impl_bundle {
+    ($($T:ident),*) => {
+        impl<$($T: Component),*> Bundle for ($($T,)*) {
+            fn insert(self, entity: Entity, registry: &mut ComponentRegistry) {
+                #[allow(non_snake_case)]
+                let ($($T,)*) = self;
+                $(
+                    registry.insert(entity, $T);
+                )*
+            }
+        }
+    };
 }
 
-#[allow(non_snake_case)]
-impl<A: Component, B: Component> Bundle for (A, B) {
-    fn insert(self, entity: Entity, registry: &mut ComponentRegistry) {
-        let (A, B) = self;
-        registry.insert(entity, A);
-        registry.insert(entity, B);
-    }
-}
+all_tuples!(impl_bundle, 1, 16, T);

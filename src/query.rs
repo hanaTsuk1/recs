@@ -4,6 +4,8 @@ use std::{
     marker::PhantomData,
 };
 
+use variadics_please::{all_tuples, all_tuples_enumerated};
+
 use crate::{
     Component,
     entity::Entity,
@@ -140,23 +142,32 @@ impl<T: Component> QueryData for &mut T {
     }
 }
 
-impl<A: QueryData, B: QueryData> QueryData for (A, B) {
-    type Item<'w> = (A::Item<'w>, B::Item<'w>);
-    type Fetch<'w> = (A::Fetch<'w>, B::Fetch<'w>);
+macro_rules! impl_query_data {
+    ($($T:ident),*) => {
+        impl<$($T: QueryData),*> QueryData for ($($T,)*) {
+            type Item<'w> = ($($T::Item<'w>),*);
+            type Fetch<'w> = ($($T::Fetch<'w>),*);
 
-    unsafe fn init<'w>(world: *mut World) -> Option<Self::Fetch<'w>> {
-        let a = unsafe { A::init(world)? };
-        let b = unsafe { B::init(world)? };
-        Some((a, b))
-    }
+            unsafe fn init<'w>(world: *mut World) -> Option<Self::Fetch<'w>> {
+                Some((
+                    $(
+                        unsafe { $T::init(world)? },
+                    )*
+                ))
+            }
 
-    fn access() -> Vec<Access> {
-        let mut result = vec![];
-        result.extend(A::access());
-        result.extend(B::access());
-        result
-    }
+            fn access() -> Vec<Access> {
+                let mut result = vec![];
+                $(
+                    result.extend($T::access());
+                )*
+                result
+            }
+        }
+    };
 }
+
+all_tuples!(impl_query_data, 2, 16, T);
 
 pub trait Fetch<'w> {
     type Item;
@@ -210,29 +221,56 @@ impl<'w, T: 'w> Fetch<'w> for WriteFetch<'w, T> {
     }
 }
 
-impl<'w, A: Fetch<'w>, B: Fetch<'w>> Fetch<'w> for (A, B) {
-    type Item = (A::Item, B::Item);
-
-    fn fetch(&mut self, entity: Entity) -> Option<Self::Item> {
-        let a = A::fetch(&mut self.0, entity)?;
-        let b = B::fetch(&mut self.1, entity)?;
-        Some((a, b))
-    }
-
-    fn candidate_len(&self) -> usize {
-        let a = A::candidate_len(&self.0);
-        let b = B::candidate_len(&self.1);
-        a.min(b)
-    }
-
-    unsafe fn candidate_at(&self, index: usize) -> Option<Entity> {
-        if A::candidate_len(&self.0) <= B::candidate_len(&self.1) {
-            unsafe { A::candidate_at(&self.0, index) }
-        } else {
-            unsafe { B::candidate_at(&self.1, index) }
-        }
-    }
+trait TupleFetchMeta<'w> {
+    fn candidate_source(&self) -> (usize, usize);
 }
+
+macro_rules! impl_fetch {
+    ($(($n:tt, $T:ident)),*) => {
+        impl<'w, $($T: Fetch<'w>),*> TupleFetchMeta<'w> for ($($T,)*) {
+            fn candidate_source(&self) -> (usize, usize) {
+                [
+                    $(
+                        ($n, self.$n.candidate_len()),
+                    )*
+                ]
+                .into_iter()
+                .min_by_key(|(_, len)| *len)
+                .unwrap_or((0, 0))
+            }
+        }
+
+        impl<'w, $($T: Fetch<'w>),*> Fetch<'w> for ($($T,)*) {
+            type Item = ($($T::Item,)*);
+
+            fn fetch(&mut self, entity: Entity) -> Option<Self::Item> {
+                Some((
+                    $(
+                        self.$n.fetch(entity)?,
+                    )*
+                ))
+            }
+
+            fn candidate_len(&self) -> usize {
+                self.candidate_source().1
+            }
+
+            unsafe fn candidate_at(&self, index: usize) -> Option<Entity> {
+                let (candidate, _) = self.candidate_source();
+                match candidate {
+                    $(
+                        $n => unsafe {
+                            self.$n.candidate_at(index)
+                        },
+                    )*
+                    _ => None,
+                }
+            }
+        }
+    };
+}
+
+all_tuples_enumerated!(impl_fetch, 2, 16, T);
 
 #[cfg(test)]
 mod tests {

@@ -12,3 +12,4 @@ resolver = "3"
 
 [dependencies]
 recs-macro = { path = "macro" }
+variadics_please = "2"
