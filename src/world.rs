@@ -3,11 +3,12 @@ use crate::{
     component::{Component, ComponentRegistry},
     entity::{Entities, Entity},
     error::{RecsError, RecsResult},
+    query::{Query, QueryData},
 };
 
 pub struct World {
     entities: Entities,
-    components: ComponentRegistry,
+    pub(crate) components: ComponentRegistry,
 }
 
 impl World {
@@ -58,6 +59,10 @@ impl World {
     pub fn get_mut<T: Component>(&mut self, entity: Entity) -> RecsResult<Option<&mut T>> {
         self.check(entity)?;
         Ok(self.components.get_mut(entity))
+    }
+
+    pub fn query<Q: QueryData>(&mut self) -> Query<'_, Q> {
+        Query::init(self)
     }
 }
 

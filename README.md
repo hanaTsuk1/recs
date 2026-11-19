@@ -77,3 +77,32 @@ sparse set 解决了单个类型 component 的存储，现在要管理不同类�
 **只指定 entity 没有对应的 T， 要怎么通过`Box<dyn Any>`获取`SparseSet<T>` 来进行销毁呢？**
 
 + 用 trait Storage: any，得到具体的`Box<dyn Storage>`，然后让 sparse set 实现 storage，就可以通过 trait object 来调用SparseSet 的确定函数，而不需要管 T
+
+
+
+## query
+
+现在开始查询数据，我们可能面临各种类型，甚至是组合的类型需要一起返回结果
+
+- `&Position`
+- `&mut Position`
+- `(&Position, &Velocity)`
+- `(&mut Position, &Velocity)`
+
+需要一个 trait 来约束类型，将这些限制为 component
+
+通过这个 `QueryData` trait获取 world 中的`ComponentRegistry`找到对应 storage
+
+最后 query 返回迭代器
+
+---
+
+一旦照着这个路线为**不可变**、**可变**及**其组合**依次实现，就会在获取 storage含有**可变**的组合时遇到rust的限制
+
+> 同一时刻，你只能拥有要么一个可变引用，要么任意多个不可变引用
+
+无法在通过world获取storage 时，同时得到多个引用**包含可变引用**的情况
+
+这时候就需要使用裸指针了，通过query内部独占world，然后对存储component的sparse set进行解引用，让遍历entity的过程所产生的结果不发生重叠
+
+由于world独占，component的存储不会发生变化，只需要保证查询的类型读写本身不重叠，最终可以保证操作安全

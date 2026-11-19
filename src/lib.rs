@@ -4,6 +4,7 @@ mod bundle;
 mod component;
 mod entity;
 mod error;
+mod query;
 mod sparse_set;
 mod world;
 

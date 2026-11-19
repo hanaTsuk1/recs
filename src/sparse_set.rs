@@ -6,6 +6,15 @@ pub struct SparseSet<T> {
     dense: Vec<T>,
 }
 
+pub struct SparseSetRawParts<T> {
+    sparse: *const Option<usize>,
+    sparse_len: usize,
+    entities: *const Entity,
+    entity_len: usize,
+    dense: *mut T,
+    dense_len: usize,
+}
+
 impl<T> SparseSet<T> {
     pub fn new() -> Self {
         Self {
@@ -76,6 +85,59 @@ impl<T> SparseSet<T> {
 
     pub fn contains(&self, entity: Entity) -> bool {
         self.get(entity).is_some()
+    }
+
+    pub fn raw_parts_mut(&mut self) -> SparseSetRawParts<T> {
+        SparseSetRawParts {
+            sparse: self.sparse.as_ptr(),
+            sparse_len: self.sparse.len(),
+            entities: self.entities.as_ptr(),
+            entity_len: self.entities.len(),
+            dense: self.dense.as_mut_ptr(),
+            dense_len: self.dense.len(),
+        }
+    }
+}
+
+impl<T> SparseSetRawParts<T> {
+    unsafe fn get_dense_index(&self, entity: Entity) -> Option<usize> {
+        let sparse_index = entity.index() as usize;
+        if sparse_index >= self.sparse_len {
+            return None;
+        }
+
+        let dense_index = unsafe { *self.sparse.add(sparse_index) }?;
+        if dense_index >= self.dense_len || dense_index >= self.entity_len {
+            return None;
+        }
+
+        if unsafe { *self.entities.add(dense_index) } == entity {
+            Some(dense_index)
+        } else {
+            None
+        }
+    }
+
+    pub unsafe fn get<'a>(&self, entity: Entity) -> Option<&'a T> {
+        let index = unsafe { self.get_dense_index(entity) }?;
+        Some(unsafe { &*self.dense.add(index) })
+    }
+
+    pub unsafe fn get_mut<'a>(&self, entity: Entity) -> Option<&'a mut T> {
+        let index = unsafe { self.get_dense_index(entity) }?;
+        Some(unsafe { &mut *self.dense.add(index) })
+    }
+
+    pub fn len(&self) -> usize {
+        self.entity_len
+    }
+
+    pub unsafe fn entity_at(&self, index: usize) -> Option<Entity> {
+        if index >= self.entity_len {
+            return None;
+        }
+
+        Some(unsafe { *self.entities.add(index) })
     }
 }
 

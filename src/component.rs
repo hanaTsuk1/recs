@@ -3,7 +3,11 @@ use std::{
     collections::HashMap,
 };
 
-use crate::{bundle::Bundle, entity::Entity, sparse_set::SparseSet};
+use crate::{
+    bundle::Bundle,
+    entity::Entity,
+    sparse_set::{SparseSet, SparseSetRawParts},
+};
 
 trait Storage: Any {
     fn remove_components(&mut self, entity: Entity);
@@ -33,8 +37,8 @@ impl ComponentRegistry {
             let mut storage = SparseSet::<T>::new();
             storage.insert(entity, component);
 
-            let typeid = TypeId::of::<T>();
-            self.storages.insert(typeid, Box::new(storage));
+            let type_id = TypeId::of::<T>();
+            self.storages.insert(type_id, Box::new(storage));
 
             None
         }
@@ -57,14 +61,14 @@ impl ComponentRegistry {
     }
 
     fn get_storage<T: Component>(&self) -> Option<&SparseSet<T>> {
-        let typeid = TypeId::of::<T>();
-        let storage: &dyn Any = self.storages.get(&typeid)?.as_ref();
+        let type_id = TypeId::of::<T>();
+        let storage: &dyn Any = self.storages.get(&type_id)?.as_ref();
         storage.downcast_ref::<SparseSet<T>>()
     }
 
     fn get_storage_mut<T: Component>(&mut self) -> Option<&mut SparseSet<T>> {
-        let typeid = TypeId::of::<T>();
-        let storage: &mut dyn Any = self.storages.get_mut(&typeid)?.as_mut();
+        let type_id = TypeId::of::<T>();
+        let storage: &mut dyn Any = self.storages.get_mut(&type_id)?.as_mut();
         storage.downcast_mut::<SparseSet<T>>()
     }
 
@@ -72,6 +76,10 @@ impl ComponentRegistry {
         for storage in self.storages.values_mut() {
             storage.remove_components(entity);
         }
+    }
+
+    pub fn raw_parts_mut<T: Component>(&mut self) -> Option<SparseSetRawParts<T>> {
+        Some(self.get_storage_mut::<T>()?.raw_parts_mut())
     }
 }
 
