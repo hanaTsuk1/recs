@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>recs / Bevy ECS benchmark</title>
+  <link rel="stylesheet" href="ecs-heatmap.css">
+</head>
+<body>
+  <main>
+    <header class="page-title">
+      <h1>recs / Bevy ECS 基准结果</h1>
+      <p>第一行是中位耗时 ± 95% CI 的较大偏差，第二行是相对最快项的倍数；绿色较快，红色较慢。</p>
+    </header>
+    <div id="report"></div>
+    <p class="note">几何平均按各项等权计算；Bevy 批量创建没有 recs 对照。</p>
+  </main>
+
+  <script src="ecs-heatmap-data.js"></script>
+  <script src="ecs-heatmap.js"></script>
+</body>
+</html>

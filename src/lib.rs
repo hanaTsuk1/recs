@@ -8,5 +8,9 @@ mod query;
 mod sparse_set;
 mod world;
 
-pub use component::Component;
+pub use bundle::Bundle;
+pub use component::{Component, ComponentRegistry};
+pub use entity::Entity;
+pub use query::{Access, AccessKind, Fetch, Query, QueryData};
 pub use recs_macro::Component;
+pub use world::World;

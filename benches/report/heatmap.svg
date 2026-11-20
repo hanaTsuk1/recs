@@ -1,0 +1,377 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1540" height="1577" viewBox="0 0 1540 1577" role="img" aria-labelledby="title description">
+<title id="title">recs / Bevy ECS 基准结果</title>
+<desc id="description">不同 ECS 实现的基准耗时热力表</desc>
+<rect width="100%" height="100%" fill="#fff"/>
+<rect x="0" y="0" width="245" height="40" fill="#edf0f2" stroke="#fff" stroke-width="1"/>
+<rect x="245" y="0" width="275" height="40" fill="#edf0f2" stroke="#fff" stroke-width="1"/>
+<rect x="520" y="0" width="340" height="40" fill="#edf0f2" stroke="#fff" stroke-width="1"/>
+<rect x="860" y="0" width="340" height="40" fill="#edf0f2" stroke="#fff" stroke-width="1"/>
+<rect x="1200" y="0" width="340" height="40" fill="#edf0f2" stroke="#fff" stroke-width="1"/>
+<rect x="0" y="40" width="245" height="159" fill="#eaf0f5" stroke="#fff" stroke-width="1"/>
+<rect x="245" y="40" width="275" height="53" fill="#f7f8f9" stroke="#fff" stroke-width="1"/>
+<rect x="520" y="40" width="340" height="53" fill="#fa8a71" stroke="#fff" stroke-width="1"/>
+<rect x="860" y="40" width="340" height="53" fill="#63be7b" stroke="#fff" stroke-width="1"/>
+<rect x="1200" y="40" width="340" height="53" fill="#c2d980" stroke="#fff" stroke-width="1"/>
+<rect x="245" y="93" width="275" height="53" fill="#f7f8f9" stroke="#fff" stroke-width="1"/>
+<rect x="520" y="93" width="340" height="53" fill="#fa8971" stroke="#fff" stroke-width="1"/>
+<rect x="860" y="93" width="340" height="53" fill="#63be7b" stroke="#fff" stroke-width="1"/>
+<rect x="1200" y="93" width="340" height="53" fill="#c4da81" stroke="#fff" stroke-width="1"/>
+<rect x="245" y="146" width="275" height="53" fill="#f7f8f9" stroke="#fff" stroke-width="1"/>
+<rect x="520" y="146" width="340" height="53" fill="#fa8871" stroke="#fff" stroke-width="1"/>
+<rect x="860" y="146" width="340" height="53" fill="#63be7b" stroke="#fff" stroke-width="1"/>
+<rect x="1200" y="146" width="340" height="53" fill="#c9dc81" stroke="#fff" stroke-width="1"/>
+<rect x="0" y="199" width="245" height="159" fill="#eaf0f5" stroke="#fff" stroke-width="1"/>
+<rect x="245" y="199" width="275" height="53" fill="#f7f8f9" stroke="#fff" stroke-width="1"/>
+<rect x="520" y="199" width="340" height="53" fill="#fa9774" stroke="#fff" stroke-width="1"/>
+<rect x="860" y="199" width="340" height="53" fill="#63be7b" stroke="#fff" stroke-width="1"/>
+<rect x="1200" y="199" width="340" height="53" fill="#fedd81" stroke="#fff" stroke-width="1"/>
+<rect x="245" y="252" width="275" height="53" fill="#f7f8f9" stroke="#fff" stroke-width="1"/>
+<rect x="520" y="252" width="340" height="53" fill="#fa9473" stroke="#fff" stroke-width="1"/>
+<rect x="860" y="252" width="340" height="53" fill="#63be7b" stroke="#fff" stroke-width="1"/>
+<rect x="1200" y="252" width="340" height="53" fill="#fed980" stroke="#fff" stroke-width="1"/>
+<rect x="245" y="305" width="275" height="53" fill="#f7f8f9" stroke="#fff" stroke-width="1"/>
+<rect x="520" y="305" width="340" height="53" fill="#fa9273" stroke="#fff" stroke-width="1"/>
+<rect x="860" y="305" width="340" height="53" fill="#63be7b" stroke="#fff" stroke-width="1"/>
+<rect x="1200" y="305" width="340" height="53" fill="#feda81" stroke="#fff" stroke-width="1"/>
+<rect x="0" y="358" width="245" height="318" fill="#eaf0f5" stroke="#fff" stroke-width="1"/>
+<rect x="245" y="358" width="275" height="53" fill="#f7f8f9" stroke="#fff" stroke-width="1"/>
+<rect x="520" y="358" width="340" height="53" fill="#f8696b" stroke="#fff" stroke-width="1"/>
+<rect x="860" y="358" width="340" height="53" fill="#63be7b" stroke="#fff" stroke-width="1"/>
+<rect x="1200" y="358" width="340" height="53" fill="#fdbe7b" stroke="#fff" stroke-width="1"/>
+<rect x="245" y="411" width="275" height="53" fill="#f7f8f9" stroke="#fff" stroke-width="1"/>
+<rect x="520" y="411" width="340" height="53" fill="#f86c6c" stroke="#fff" stroke-width="1"/>
+<rect x="860" y="411" width="340" height="53" fill="#63be7b" stroke="#fff" stroke-width="1"/>
+<rect x="1200" y="411" width="340" height="53" fill="#fcb57a" stroke="#fff" stroke-width="1"/>
+<rect x="245" y="464" width="275" height="53" fill="#f7f8f9" stroke="#fff" stroke-width="1"/>
+<rect x="520" y="464" width="340" height="53" fill="#fa8671" stroke="#fff" stroke-width="1"/>
+<rect x="860" y="464" width="340" height="53" fill="#63be7b" stroke="#fff" stroke-width="1"/>
+<rect x="1200" y="464" width="340" height="53" fill="#d9e082" stroke="#fff" stroke-width="1"/>
+<rect x="245" y="517" width="275" height="53" fill="#f7f8f9" stroke="#fff" stroke-width="1"/>
+<rect x="520" y="517" width="340" height="53" fill="#f98270" stroke="#fff" stroke-width="1"/>
+<rect x="860" y="517" width="340" height="53" fill="#63be7b" stroke="#fff" stroke-width="1"/>
+<rect x="1200" y="517" width="340" height="53" fill="#d5df82" stroke="#fff" stroke-width="1"/>
+<rect x="245" y="570" width="275" height="53" fill="#f7f8f9" stroke="#fff" stroke-width="1"/>
+<rect x="520" y="570" width="340" height="53" fill="#fa8771" stroke="#fff" stroke-width="1"/>
+<rect x="860" y="570" width="340" height="53" fill="#63be7b" stroke="#fff" stroke-width="1"/>
+<rect x="1200" y="570" width="340" height="53" fill="#cfdd81" stroke="#fff" stroke-width="1"/>
+<rect x="245" y="623" width="275" height="53" fill="#f7f8f9" stroke="#fff" stroke-width="1"/>
+<rect x="520" y="623" width="340" height="53" fill="#fa8671" stroke="#fff" stroke-width="1"/>
+<rect x="860" y="623" width="340" height="53" fill="#63be7b" stroke="#fff" stroke-width="1"/>
+<rect x="1200" y="623" width="340" height="53" fill="#cedd81" stroke="#fff" stroke-width="1"/>
+<rect x="0" y="676" width="245" height="106" fill="#eaf0f5" stroke="#fff" stroke-width="1"/>
+<rect x="245" y="676" width="275" height="53" fill="#f7f8f9" stroke="#fff" stroke-width="1"/>
+<rect x="520" y="676" width="340" height="53" fill="#fa8771" stroke="#fff" stroke-width="1"/>
+<rect x="860" y="676" width="340" height="53" fill="#63be7b" stroke="#fff" stroke-width="1"/>
+<rect x="1200" y="676" width="340" height="53" fill="#fba076" stroke="#fff" stroke-width="1"/>
+<rect x="245" y="729" width="275" height="53" fill="#f7f8f9" stroke="#fff" stroke-width="1"/>
+<rect x="520" y="729" width="340" height="53" fill="#f98370" stroke="#fff" stroke-width="1"/>
+<rect x="860" y="729" width="340" height="53" fill="#63be7b" stroke="#fff" stroke-width="1"/>
+<rect x="1200" y="729" width="340" height="53" fill="#fa9273" stroke="#fff" stroke-width="1"/>
+<rect x="0" y="782" width="245" height="159" fill="#eaf0f5" stroke="#fff" stroke-width="1"/>
+<rect x="245" y="782" width="275" height="53" fill="#f7f8f9" stroke="#fff" stroke-width="1"/>
+<rect x="520" y="782" width="340" height="53" fill="#63be7b" stroke="#fff" stroke-width="1"/>
+<rect x="860" y="782" width="340" height="53" fill="#fcbb7b" stroke="#fff" stroke-width="1"/>
+<rect x="1200" y="782" width="340" height="53" fill="#ffe483" stroke="#fff" stroke-width="1"/>
+<rect x="245" y="835" width="275" height="53" fill="#f7f8f9" stroke="#fff" stroke-width="1"/>
+<rect x="520" y="835" width="340" height="53" fill="#63be7b" stroke="#fff" stroke-width="1"/>
+<rect x="860" y="835" width="340" height="53" fill="#fcbc7b" stroke="#fff" stroke-width="1"/>
+<rect x="1200" y="835" width="340" height="53" fill="#ffe783" stroke="#fff" stroke-width="1"/>
+<rect x="245" y="888" width="275" height="53" fill="#f7f8f9" stroke="#fff" stroke-width="1"/>
+<rect x="520" y="888" width="340" height="53" fill="#63be7b" stroke="#fff" stroke-width="1"/>
+<rect x="860" y="888" width="340" height="53" fill="#fcb179" stroke="#fff" stroke-width="1"/>
+<rect x="1200" y="888" width="340" height="53" fill="#ffe683" stroke="#fff" stroke-width="1"/>
+<rect x="0" y="941" width="245" height="318" fill="#eaf0f5" stroke="#fff" stroke-width="1"/>
+<rect x="245" y="941" width="275" height="53" fill="#f7f8f9" stroke="#fff" stroke-width="1"/>
+<rect x="520" y="941" width="340" height="53" fill="#efe683" stroke="#fff" stroke-width="1"/>
+<rect x="860" y="941" width="340" height="53" fill="#63be7b" stroke="#fff" stroke-width="1"/>
+<rect x="1200" y="941" width="340" height="53" fill="#e6e483" stroke="#fff" stroke-width="1"/>
+<rect x="245" y="994" width="275" height="53" fill="#f7f8f9" stroke="#fff" stroke-width="1"/>
+<rect x="520" y="994" width="340" height="53" fill="#fedb81" stroke="#fff" stroke-width="1"/>
+<rect x="860" y="994" width="340" height="53" fill="#63be7b" stroke="#fff" stroke-width="1"/>
+<rect x="1200" y="994" width="340" height="53" fill="#f8e984" stroke="#fff" stroke-width="1"/>
+<rect x="245" y="1047" width="275" height="53" fill="#f7f8f9" stroke="#fff" stroke-width="1"/>
+<rect x="520" y="1047" width="340" height="53" fill="#fed880" stroke="#fff" stroke-width="1"/>
+<rect x="860" y="1047" width="340" height="53" fill="#63be7b" stroke="#fff" stroke-width="1"/>
+<rect x="1200" y="1047" width="340" height="53" fill="#ffe984" stroke="#fff" stroke-width="1"/>
+<rect x="245" y="1100" width="275" height="53" fill="#f7f8f9" stroke="#fff" stroke-width="1"/>
+<rect x="520" y="1100" width="340" height="53" fill="#eceff1" stroke="#fff" stroke-width="1"/>
+<rect x="860" y="1100" width="340" height="53" fill="#63be7b" stroke="#fff" stroke-width="1"/>
+<rect x="1200" y="1100" width="340" height="53" fill="#fedb81" stroke="#fff" stroke-width="1"/>
+<rect x="245" y="1153" width="275" height="53" fill="#f7f8f9" stroke="#fff" stroke-width="1"/>
+<rect x="520" y="1153" width="340" height="53" fill="#eceff1" stroke="#fff" stroke-width="1"/>
+<rect x="860" y="1153" width="340" height="53" fill="#63be7b" stroke="#fff" stroke-width="1"/>
+<rect x="1200" y="1153" width="340" height="53" fill="#fed17f" stroke="#fff" stroke-width="1"/>
+<rect x="245" y="1206" width="275" height="53" fill="#f7f8f9" stroke="#fff" stroke-width="1"/>
+<rect x="520" y="1206" width="340" height="53" fill="#eceff1" stroke="#fff" stroke-width="1"/>
+<rect x="860" y="1206" width="340" height="53" fill="#63be7b" stroke="#fff" stroke-width="1"/>
+<rect x="1200" y="1206" width="340" height="53" fill="#fed17f" stroke="#fff" stroke-width="1"/>
+<rect x="0" y="1259" width="245" height="159" fill="#eaf0f5" stroke="#fff" stroke-width="1"/>
+<rect x="245" y="1259" width="275" height="53" fill="#f7f8f9" stroke="#fff" stroke-width="1"/>
+<rect x="520" y="1259" width="340" height="53" fill="#63be7b" stroke="#fff" stroke-width="1"/>
+<rect x="860" y="1259" width="340" height="53" fill="#b3d580" stroke="#fff" stroke-width="1"/>
+<rect x="1200" y="1259" width="340" height="53" fill="#fee182" stroke="#fff" stroke-width="1"/>
+<rect x="245" y="1312" width="275" height="53" fill="#f7f8f9" stroke="#fff" stroke-width="1"/>
+<rect x="520" y="1312" width="340" height="53" fill="#63be7b" stroke="#fff" stroke-width="1"/>
+<rect x="860" y="1312" width="340" height="53" fill="#cfdd81" stroke="#fff" stroke-width="1"/>
+<rect x="1200" y="1312" width="340" height="53" fill="#e4e382" stroke="#fff" stroke-width="1"/>
+<rect x="245" y="1365" width="275" height="53" fill="#f7f8f9" stroke="#fff" stroke-width="1"/>
+<rect x="520" y="1365" width="340" height="53" fill="#63be7b" stroke="#fff" stroke-width="1"/>
+<rect x="860" y="1365" width="340" height="53" fill="#b0d47f" stroke="#fff" stroke-width="1"/>
+<rect x="1200" y="1365" width="340" height="53" fill="#f0e783" stroke="#fff" stroke-width="1"/>
+<rect x="0" y="1418" width="245" height="106" fill="#eaf0f5" stroke="#fff" stroke-width="1"/>
+<rect x="245" y="1418" width="275" height="53" fill="#f7f8f9" stroke="#fff" stroke-width="1"/>
+<rect x="520" y="1418" width="340" height="53" fill="#fa9573" stroke="#fff" stroke-width="1"/>
+<rect x="860" y="1418" width="340" height="53" fill="#b7d680" stroke="#fff" stroke-width="1"/>
+<rect x="1200" y="1418" width="340" height="53" fill="#63be7b" stroke="#fff" stroke-width="1"/>
+<rect x="245" y="1471" width="275" height="53" fill="#f7f8f9" stroke="#fff" stroke-width="1"/>
+<rect x="520" y="1471" width="340" height="53" fill="#fb9d75" stroke="#fff" stroke-width="1"/>
+<rect x="860" y="1471" width="340" height="53" fill="#b9d780" stroke="#fff" stroke-width="1"/>
+<rect x="1200" y="1471" width="340" height="53" fill="#63be7b" stroke="#fff" stroke-width="1"/>
+<rect x="0" y="1524" width="245" height="53" fill="#eaf0f5" stroke="#fff" stroke-width="1"/>
+<rect x="245" y="1524" width="275" height="53" fill="#e9edf0" stroke="#fff" stroke-width="1"/>
+<rect x="520" y="1524" width="340" height="53" fill="#fcaf79" stroke="#fff" stroke-width="1"/>
+<rect x="860" y="1524" width="340" height="53" fill="#b3d580" stroke="#fff" stroke-width="1"/>
+<rect x="1200" y="1524" width="340" height="53" fill="#ffe984" stroke="#fff" stroke-width="1"/>
+<line x1="0" y1="39.5" x2="1540" y2="39.5" stroke="#d5dbe0" stroke-width="1"/>
+<line x1="0" y1="40.5" x2="1540" y2="40.5" stroke="#cbd2d8" stroke-width="2"/>
+<line x1="0" y1="199.5" x2="1540" y2="199.5" stroke="#cbd2d8" stroke-width="2"/>
+<line x1="0" y1="358.5" x2="1540" y2="358.5" stroke="#cbd2d8" stroke-width="2"/>
+<line x1="0" y1="676.5" x2="1540" y2="676.5" stroke="#cbd2d8" stroke-width="2"/>
+<line x1="0" y1="782.5" x2="1540" y2="782.5" stroke="#cbd2d8" stroke-width="2"/>
+<line x1="0" y1="941.5" x2="1540" y2="941.5" stroke="#cbd2d8" stroke-width="2"/>
+<line x1="0" y1="1259.5" x2="1540" y2="1259.5" stroke="#cbd2d8" stroke-width="2"/>
+<line x1="0" y1="1418.5" x2="1540" y2="1418.5" stroke="#cbd2d8" stroke-width="2"/>
+<line x1="0" y1="1524.5" x2="1540" y2="1524.5" stroke="#737c86" stroke-width="2"/>
+<text x="12" y="20" text-anchor="start" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="13" font-weight="650">Group / API</text>
+<text x="257" y="20" text-anchor="start" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="13" font-weight="650">参数（实体数）</text>
+<text x="690" y="20" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="13" font-weight="650">recs · SparseSet</text>
+<text x="1030" y="20" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="13" font-weight="650">Bevy · Table</text>
+<text x="1370" y="20" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="13" font-weight="650">Bevy · SparseSet</text>
+<text x="12" y="98.5" text-anchor="start" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="13" font-weight="700">密集读取</text>
+<text x="12" y="119" text-anchor="start" dominant-baseline="central" fill="#55616d" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400">query/dense_read</text>
+<text x="12" y="141" text-anchor="start" dominant-baseline="central" fill="#46515c" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="400">逐实体遍历并读取两项组件数据。</text>
+<text x="257" y="66.5" text-anchor="start" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="13" font-weight="550">10k</text>
+<text x="690" y="58" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>21.68 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 0.16 μs</tspan></text>
+<text x="690" y="77" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(4.33×)</text>
+<text x="1030" y="58" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>5.01 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 0.03 μs</tspan></text>
+<text x="1030" y="77" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(1.00×)</text>
+<text x="1370" y="58" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>5.99 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 0.04 μs</tspan></text>
+<text x="1370" y="77" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(1.20×)</text>
+<text x="257" y="119.5" text-anchor="start" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="13" font-weight="550">100k</text>
+<text x="690" y="111" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>222.14 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 1.09 μs</tspan></text>
+<text x="690" y="130" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(4.39×)</text>
+<text x="1030" y="111" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>50.56 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 0.10 μs</tspan></text>
+<text x="1030" y="130" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(1.00×)</text>
+<text x="1370" y="111" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>60.97 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 0.95 μs</tspan></text>
+<text x="1370" y="130" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(1.21×)</text>
+<text x="257" y="172.5" text-anchor="start" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="13" font-weight="550">1M</text>
+<text x="690" y="164" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>2.25 ms</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 0.03 ms</tspan></text>
+<text x="690" y="183" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(4.46×)</text>
+<text x="1030" y="164" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>505.39 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 1.65 μs</tspan></text>
+<text x="1030" y="183" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(1.00×)</text>
+<text x="1370" y="164" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>621.39 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 5.37 μs</tspan></text>
+<text x="1370" y="183" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(1.23×)</text>
+<text x="12" y="250" text-anchor="start" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="13" font-weight="700">密集写入</text>
+<text x="12" y="270.5" text-anchor="start" dominant-baseline="central" fill="#55616d" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400">query/dense_write</text>
+<text x="12" y="292.5" text-anchor="start" dominant-baseline="central" fill="#46515c" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="400">逐实体遍历读取两项组件数据，并写入其中</text>
+<text x="12" y="307.5" text-anchor="start" dominant-baseline="central" fill="#46515c" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="400">一项。</text>
+<text x="257" y="225.5" text-anchor="start" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="13" font-weight="550">10k</text>
+<text x="690" y="217" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>23.49 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 0.23 μs</tspan></text>
+<text x="690" y="236" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(3.68×)</text>
+<text x="1030" y="217" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>6.39 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 0.03 μs</tspan></text>
+<text x="1030" y="236" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(1.00×)</text>
+<text x="1370" y="217" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>11.51 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 0.03 μs</tspan></text>
+<text x="1370" y="236" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(1.80×)</text>
+<text x="257" y="278.5" text-anchor="start" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="13" font-weight="550">100k</text>
+<text x="690" y="270" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>244.83 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 2.68 μs</tspan></text>
+<text x="690" y="289" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(3.81×)</text>
+<text x="1030" y="270" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>64.28 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 0.78 μs</tspan></text>
+<text x="1030" y="289" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(1.00×)</text>
+<text x="1370" y="270" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>120.07 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 1.19 μs</tspan></text>
+<text x="1370" y="289" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(1.87×)</text>
+<text x="257" y="331.5" text-anchor="start" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="13" font-weight="550">1M</text>
+<text x="690" y="323" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>2.53 ms</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 0.02 ms</tspan></text>
+<text x="690" y="342" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(3.92×)</text>
+<text x="1030" y="323" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>645.58 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 0.93 μs</tspan></text>
+<text x="1030" y="342" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(1.00×)</text>
+<text x="1370" y="323" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>1.20 ms</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 0.01 ms</tspan></text>
+<text x="1370" y="342" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(1.85×)</text>
+<text x="12" y="488.5" text-anchor="start" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="13" font-weight="700">稀疏匹配查询</text>
+<text x="12" y="509" text-anchor="start" dominant-baseline="central" fill="#55616d" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400">query/sparse_join_read</text>
+<text x="12" y="531" text-anchor="start" dominant-baseline="central" fill="#46515c" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="400">一项组件数据覆盖全部实体，另一项按匹配</text>
+<text x="12" y="546" text-anchor="start" dominant-baseline="central" fill="#46515c" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="400">率稀疏分布。</text>
+<text x="257" y="384.5" text-anchor="start" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="13" font-weight="550">10% · 10k</text>
+<text x="690" y="376" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>3.03 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 0.04 μs</tspan></text>
+<text x="690" y="395" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(6.83×)</text>
+<text x="1030" y="376" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>443.0 ns</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 1.2 ns</tspan></text>
+<text x="1030" y="395" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(1.00×)</text>
+<text x="1370" y="376" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>1.05 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 0.02 μs</tspan></text>
+<text x="1370" y="395" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(2.38×)</text>
+<text x="257" y="437.5" text-anchor="start" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="13" font-weight="550">10% · 100k</text>
+<text x="690" y="429" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>32.84 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 0.50 μs</tspan></text>
+<text x="690" y="448" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(6.54×)</text>
+<text x="1030" y="429" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>5.02 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 0.02 μs</tspan></text>
+<text x="1030" y="448" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(1.00×)</text>
+<text x="1370" y="429" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>13.14 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 0.03 μs</tspan></text>
+<text x="1370" y="448" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(2.62×)</text>
+<text x="257" y="490.5" text-anchor="start" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="13" font-weight="550">50% · 10k</text>
+<text x="690" y="482" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>11.26 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 0.07 μs</tspan></text>
+<text x="690" y="501" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(4.57×)</text>
+<text x="1030" y="482" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>2.46 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 0.01 μs</tspan></text>
+<text x="1030" y="501" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(1.00×)</text>
+<text x="1370" y="482" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>3.24 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 0.01 μs</tspan></text>
+<text x="1370" y="501" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(1.31×)</text>
+<text x="257" y="543.5" text-anchor="start" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="13" font-weight="550">50% · 100k</text>
+<text x="690" y="535" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>122.14 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 0.24 μs</tspan></text>
+<text x="690" y="554" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(4.83×)</text>
+<text x="1030" y="535" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>25.27 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 0.05 μs</tspan></text>
+<text x="1030" y="554" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(1.00×)</text>
+<text x="1370" y="535" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>32.62 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 0.15 μs</tspan></text>
+<text x="1370" y="554" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(1.29×)</text>
+<text x="257" y="596.5" text-anchor="start" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="13" font-weight="550">100% · 10k</text>
+<text x="690" y="588" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>22.39 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 0.12 μs</tspan></text>
+<text x="690" y="607" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(4.47×)</text>
+<text x="1030" y="588" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>5.01 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 0.01 μs</tspan></text>
+<text x="1030" y="607" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(1.00×)</text>
+<text x="1370" y="588" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>6.30 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 0.03 μs</tspan></text>
+<text x="1370" y="607" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(1.26×)</text>
+<text x="257" y="649.5" text-anchor="start" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="13" font-weight="550">100% · 100k</text>
+<text x="690" y="641" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>229.02 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 0.92 μs</tspan></text>
+<text x="690" y="660" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(4.54×)</text>
+<text x="1030" y="641" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>50.47 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 0.24 μs</tspan></text>
+<text x="1030" y="660" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(1.00×)</text>
+<text x="1370" y="641" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>63.13 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 0.88 μs</tspan></text>
+<text x="1370" y="660" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(1.25×)</text>
+<text x="12" y="700.5" text-anchor="start" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="13" font-weight="700">组合碎片查询</text>
+<text x="12" y="721" text-anchor="start" dominant-baseline="central" fill="#55616d" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400">query/fragmented_read</text>
+<text x="12" y="743" text-anchor="start" dominant-baseline="central" fill="#46515c" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="400">按 4 个标记形成 16 种实体组合后</text>
+<text x="12" y="758" text-anchor="start" dominant-baseline="central" fill="#46515c" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="400">遍历查询。</text>
+<text x="257" y="702.5" text-anchor="start" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="13" font-weight="550">10k</text>
+<text x="690" y="694" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>22.39 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 0.07 μs</tspan></text>
+<text x="690" y="713" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(4.47×)</text>
+<text x="1030" y="694" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>5.01 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 0.01 μs</tspan></text>
+<text x="1030" y="713" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(1.00×)</text>
+<text x="1370" y="694" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>16.51 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 0.18 μs</tspan></text>
+<text x="1370" y="713" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(3.30×)</text>
+<text x="257" y="755.5" text-anchor="start" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="13" font-weight="550">100k</text>
+<text x="690" y="747" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>238.69 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 1.05 μs</tspan></text>
+<text x="690" y="766" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(4.74×)</text>
+<text x="1030" y="747" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>50.32 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 0.02 μs</tspan></text>
+<text x="1030" y="766" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(1.00×)</text>
+<text x="1370" y="747" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>197.76 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 0.37 μs</tspan></text>
+<text x="1370" y="766" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(3.93×)</text>
+<text x="12" y="840.5" text-anchor="start" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="13" font-weight="700">组件增删</text>
+<text x="12" y="861" text-anchor="start" dominant-baseline="central" fill="#55616d" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400">component/add_remove</text>
+<text x="12" y="883" text-anchor="start" dominant-baseline="central" fill="#46515c" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="400">在预建实体上反复添加、移除组件。</text>
+<text x="257" y="808.5" text-anchor="start" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="13" font-weight="550">1k</text>
+<text x="690" y="800" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>17.84 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 0.11 μs</tspan></text>
+<text x="690" y="819" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(1.00×)</text>
+<text x="1030" y="800" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>43.78 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 0.08 μs</tspan></text>
+<text x="1030" y="819" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(2.45×)</text>
+<text x="1370" y="800" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>30.43 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 0.17 μs</tspan></text>
+<text x="1370" y="819" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(1.71×)</text>
+<text x="257" y="861.5" text-anchor="start" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="13" font-weight="550">10k</text>
+<text x="690" y="853" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>185.56 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 0.33 μs</tspan></text>
+<text x="690" y="872" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(1.00×)</text>
+<text x="1030" y="853" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>454.31 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 2.22 μs</tspan></text>
+<text x="1030" y="872" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(2.45×)</text>
+<text x="1370" y="853" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>308.04 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 1.03 μs</tspan></text>
+<text x="1370" y="872" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(1.66×)</text>
+<text x="257" y="914.5" text-anchor="start" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="13" font-weight="550">100k</text>
+<text x="690" y="906" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>1.86 ms</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 0.01 ms</tspan></text>
+<text x="690" y="925" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(1.00×)</text>
+<text x="1030" y="906" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>5.08 ms</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 0.03 ms</tspan></text>
+<text x="1030" y="925" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(2.73×)</text>
+<text x="1370" y="906" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>3.11 ms</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 0.02 ms</tspan></text>
+<text x="1370" y="925" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(1.67×)</text>
+<text x="12" y="1071.5" text-anchor="start" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="13" font-weight="700">实体生成</text>
+<text x="12" y="1092" text-anchor="start" dominant-baseline="central" fill="#55616d" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400">entity/spawn</text>
+<text x="12" y="1114" text-anchor="start" dominant-baseline="central" fill="#46515c" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="400">测量新建 World 和实体创建，包含</text>
+<text x="12" y="1129" text-anchor="start" dominant-baseline="central" fill="#46515c" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="400"> Bevy 批量创建。</text>
+<text x="257" y="967.5" text-anchor="start" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="13" font-weight="550">逐个 · 1k</text>
+<text x="690" y="959" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>27.78 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 0.09 μs</tspan></text>
+<text x="690" y="978" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(1.47×)</text>
+<text x="1030" y="959" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>18.87 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 0.32 μs</tspan></text>
+<text x="1030" y="978" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(1.00×)</text>
+<text x="1370" y="959" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>26.48 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 0.56 μs</tspan></text>
+<text x="1370" y="978" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(1.40×)</text>
+<text x="257" y="1020.5" text-anchor="start" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="13" font-weight="550">逐个 · 10k</text>
+<text x="690" y="1012" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>276.83 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 2.34 μs</tspan></text>
+<text x="690" y="1031" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(1.83×)</text>
+<text x="1030" y="1012" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>150.92 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 1.15 μs</tspan></text>
+<text x="1030" y="1031" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(1.00×)</text>
+<text x="1370" y="1012" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>234.06 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 3.65 μs</tspan></text>
+<text x="1370" y="1031" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(1.55×)</text>
+<text x="257" y="1073.5" text-anchor="start" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="13" font-weight="550">逐个 · 100k</text>
+<text x="690" y="1065" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>2.53 ms</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 0.03 ms</tspan></text>
+<text x="690" y="1084" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(1.88×)</text>
+<text x="1030" y="1065" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>1.35 ms</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 0.01 ms</tspan></text>
+<text x="1030" y="1084" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(1.00×)</text>
+<text x="1370" y="1065" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>2.22 ms</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 0.04 ms</tspan></text>
+<text x="1370" y="1084" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(1.64×)</text>
+<text x="257" y="1126.5" text-anchor="start" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="13" font-weight="550">批量 · 1k</text>
+<text x="690" y="1126.5" text-anchor="middle" dominant-baseline="central" fill="#6b737c" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="13" font-weight="400">—</text>
+<text x="1030" y="1118" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>12.37 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 0.09 μs</tspan></text>
+<text x="1030" y="1137" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(1.00×)</text>
+<text x="1370" y="1118" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>22.71 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 0.22 μs</tspan></text>
+<text x="1370" y="1137" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(1.84×)</text>
+<text x="257" y="1179.5" text-anchor="start" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="13" font-weight="550">批量 · 10k</text>
+<text x="690" y="1179.5" text-anchor="middle" dominant-baseline="central" fill="#6b737c" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="13" font-weight="400">—</text>
+<text x="1030" y="1171" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>96.01 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 0.20 μs</tspan></text>
+<text x="1030" y="1190" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(1.00×)</text>
+<text x="1370" y="1171" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>192.28 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 0.32 μs</tspan></text>
+<text x="1370" y="1190" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(2.00×)</text>
+<text x="257" y="1232.5" text-anchor="start" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="13" font-weight="550">批量 · 100k</text>
+<text x="690" y="1232.5" text-anchor="middle" dominant-baseline="central" fill="#6b737c" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="13" font-weight="400">—</text>
+<text x="1030" y="1224" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>943.81 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 1.59 μs</tspan></text>
+<text x="1030" y="1243" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(1.00×)</text>
+<text x="1370" y="1224" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>1.88 ms</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 0.06 ms</tspan></text>
+<text x="1370" y="1243" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(1.99×)</text>
+<text x="12" y="1317.5" text-anchor="start" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="13" font-weight="700">实体销毁重建</text>
+<text x="12" y="1338" text-anchor="start" dominant-baseline="central" fill="#55616d" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400">entity/despawn_spawn</text>
+<text x="12" y="1360" text-anchor="start" dominant-baseline="central" fill="#46515c" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="400">循环销毁全部实体，再创建同规模实体。</text>
+<text x="257" y="1285.5" text-anchor="start" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="13" font-weight="550">1k</text>
+<text x="690" y="1277" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>26.40 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 0.06 μs</tspan></text>
+<text x="690" y="1296" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(1.00×)</text>
+<text x="1030" y="1277" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>29.99 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 0.24 μs</tspan></text>
+<text x="1030" y="1296" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(1.14×)</text>
+<text x="1370" y="1277" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>46.24 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 1.97 μs</tspan></text>
+<text x="1370" y="1296" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(1.75×)</text>
+<text x="257" y="1338.5" text-anchor="start" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="13" font-weight="550">10k</text>
+<text x="690" y="1330" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>277.99 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 1.14 μs</tspan></text>
+<text x="690" y="1349" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(1.00×)</text>
+<text x="1030" y="1330" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>349.34 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 23.16 μs</tspan></text>
+<text x="1030" y="1349" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(1.26×)</text>
+<text x="1370" y="1330" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>386.79 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 25.11 μs</tspan></text>
+<text x="1370" y="1349" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(1.39×)</text>
+<text x="257" y="1391.5" text-anchor="start" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="13" font-weight="550">100k</text>
+<text x="690" y="1383" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>2.75 ms</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 0.02 ms</tspan></text>
+<text x="690" y="1402" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(1.00×)</text>
+<text x="1030" y="1383" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>3.09 ms</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 0.03 ms</tspan></text>
+<text x="1030" y="1402" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(1.12×)</text>
+<text x="1370" y="1383" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>4.06 ms</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 0.22 ms</tspan></text>
+<text x="1370" y="1402" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(1.48×)</text>
+<text x="12" y="1450" text-anchor="start" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="13" font-weight="700">随机查组件</text>
+<text x="12" y="1470.5" text-anchor="start" dominant-baseline="central" fill="#55616d" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400">entity/random_get</text>
+<text x="12" y="1492.5" text-anchor="start" dominant-baseline="central" fill="#46515c" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="400">按固定乱序访问实体并读取组件数据。</text>
+<text x="257" y="1444.5" text-anchor="start" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="13" font-weight="550">10k</text>
+<text x="690" y="1436" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>107.79 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 1.45 μs</tspan></text>
+<text x="690" y="1455" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(3.77×)</text>
+<text x="1030" y="1436" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>32.87 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 1.49 μs</tspan></text>
+<text x="1030" y="1455" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(1.15×)</text>
+<text x="1370" y="1436" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>28.62 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 0.72 μs</tspan></text>
+<text x="1370" y="1455" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(1.00×)</text>
+<text x="257" y="1497.5" text-anchor="start" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="13" font-weight="550">100k</text>
+<text x="690" y="1489" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>1.10 ms</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 0.04 ms</tspan></text>
+<text x="690" y="1508" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(3.44×)</text>
+<text x="1030" y="1489" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>370.68 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 12.31 μs</tspan></text>
+<text x="1030" y="1508" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(1.16×)</text>
+<text x="1370" y="1489" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="14" font-weight="650"><tspan>320.73 μs</tspan><tspan fill="#4c5560" font-size="11" font-weight="450"> ± 7.17 μs</tspan></text>
+<text x="1370" y="1508" text-anchor="middle" dominant-baseline="central" fill="#303740" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="11" font-weight="650">(1.00×)</text>
+<text x="12" y="1550.5" text-anchor="start" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="13" font-weight="700">汇总</text>
+<text x="257" y="1550.5" text-anchor="start" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="13" font-weight="700">几何平均</text>
+<text x="690" y="1550.5" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="15" font-weight="700">2.78×</text>
+<text x="1030" y="1550.5" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="15" font-weight="700">1.14×</text>
+<text x="1370" y="1550.5" text-anchor="middle" dominant-baseline="central" fill="#20252b" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif" font-size="15" font-weight="700">1.64×</text>
+</svg>

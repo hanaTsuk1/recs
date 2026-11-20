@@ -106,3 +106,7 @@ sparse set 解决了单个类型 component 的存储，现在要管理不同类�
 这时候就需要使用裸指针了，通过query内部独占world，然后对存储component的sparse set进行解引用，让遍历entity的过程所产生的结果不发生重叠
 
 由于world独占，component的存储不会发生变化，只需要保证查询的类型读写本身不重叠，最终可以保证操作安全
+
+## benchmark
+
+基准测试位于独立 workspace 子 crate `benches/`。运行方式和 workload 说明见 [benches/README.md](benches/README.md)。

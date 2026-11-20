@@ -25,3 +25,29 @@ run = [
     { task = "lint" },
     { task = "test" },
 ]
+
+[tasks.bench]
+description = "Run recs and Bevy ECS benchmarks and generate the heatmap report"
+run = [
+    "cargo bench -p recs-bench --bench recs",
+    "cargo bench -p recs-bench --bench bevy",
+    "bun run benches/scripts/report.ts",
+]
+
+[tasks.bench-recs]
+description = "Run recs benchmarks and refresh the heatmap report"
+run = [
+    "cargo bench -p recs-bench --bench recs",
+    "bun run benches/scripts/report.ts",
+]
+
+[tasks.bench-bevy]
+description = "Run Bevy Table and SparseSet benchmarks and refresh the heatmap report"
+run = [
+    "cargo bench -p recs-bench --bench bevy",
+    "bun run benches/scripts/report.ts",
+]
+
+[tasks.bench-report]
+description = "Generate a heatmap from the latest Criterion results"
+run = "bun run benches/scripts/report.ts"
