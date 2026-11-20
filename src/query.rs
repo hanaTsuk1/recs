@@ -27,6 +27,7 @@ impl<'w, T: QueryData> Query<'w, T> {
         if let Err(err) = validate_access(access) {
             panic!("query access conflict: {err:?}")
         }
+        // SAFETY: `QueryData` 的`access()` 已保证通过冲突检查
         let fetch = unsafe { T::init(world_ptr) };
         Self {
             fetch,
@@ -46,11 +47,12 @@ impl<'w, T: QueryData + 'w> Iterator for Query<'w, T> {
             let index = self.cursor;
             self.cursor += 1;
 
-            let Some(entity) = (unsafe { fetch.candidate_at(index) }) else {
+            let Some(entity) = fetch.candidate_at(index) else {
                 continue;
             };
 
-            if let Some(item) = fetch.fetch(entity) {
+            // SAFETY: entity不会冲突
+            if let Some(item) = unsafe { fetch.fetch(entity) } {
                 return Some(item);
             }
         }
@@ -88,29 +90,32 @@ fn validate_access(accesses: Vec<Access>) -> RecsResult<()> {
 
     Ok(())
 }
-
-pub trait QueryData {
+/// # Safety
+///
+/// 实现者必须确保`access()`准确列出访问类型
+///
+/// 任何可变访问都必须标记为[`AccessKind::Write`]
+///
+/// 依赖此信息在`init`前拒绝冲突访问
+pub unsafe trait QueryData {
     type Item<'w>;
     type Fetch<'w>: Fetch<'w, Item = Self::Item<'w>>;
 
+    /// # Safety
+    ///
+    /// 调用方需独占world，完成fetch的初始化
     unsafe fn init<'w>(world: *mut World) -> Option<Self::Fetch<'w>>;
     fn access() -> Vec<Access>;
 }
 
-unsafe fn raw_parts<T: Component>(world: *mut World) -> Option<SparseSetRawParts<T>> {
-    let world = unsafe { &mut *world };
-    world.components.raw_parts_mut::<T>()
-}
-
-impl<T: Component> QueryData for &T {
+unsafe impl<T: Component> QueryData for &T {
     type Item<'w> = &'w T;
     type Fetch<'w> = ReadFetch<'w, T>;
 
     unsafe fn init<'w>(world: *mut World) -> Option<Self::Fetch<'w>> {
-        Some(ReadFetch {
-            storage: unsafe { raw_parts(world) }?,
-            _marker: PhantomData,
-        })
+        let world = unsafe { &mut *world };
+        let storage = world.components.raw_parts_mut::<T>()?;
+        Some(ReadFetch { storage })
     }
 
     fn access() -> Vec<Access> {
@@ -122,15 +127,14 @@ impl<T: Component> QueryData for &T {
     }
 }
 
-impl<T: Component> QueryData for &mut T {
+unsafe impl<T: Component> QueryData for &mut T {
     type Item<'w> = &'w mut T;
     type Fetch<'w> = WriteFetch<'w, T>;
 
     unsafe fn init<'w>(world: *mut World) -> Option<Self::Fetch<'w>> {
-        Some(WriteFetch {
-            storage: unsafe { raw_parts(world) }?,
-            _marker: PhantomData,
-        })
+        let world = unsafe { &mut *world };
+        let storage = world.components.raw_parts_mut::<T>()?;
+        Some(WriteFetch { storage })
     }
 
     fn access() -> Vec<Access> {
@@ -144,7 +148,7 @@ impl<T: Component> QueryData for &mut T {
 
 macro_rules! impl_query_data {
     ($($T:ident),*) => {
-        impl<$($T: QueryData),*> QueryData for ($($T,)*) {
+        unsafe impl<$($T: QueryData),*> QueryData for ($($T,)*) {
             type Item<'w> = ($($T::Item<'w>),*);
             type Fetch<'w> = ($($T::Fetch<'w>),*);
 
@@ -169,46 +173,50 @@ macro_rules! impl_query_data {
 
 all_tuples!(impl_query_data, 2, 16, T);
 
-pub trait Fetch<'w> {
+/// # Safety
+///
+/// `fetch`必须能安全处理传入的任意entity，包括不在此fetch自身存储中的entity
+pub unsafe trait Fetch<'w> {
     type Item;
 
     fn candidate_len(&self) -> usize;
 
-    unsafe fn candidate_at(&self, index: usize) -> Option<Entity>;
+    fn candidate_at(&self, index: usize) -> Option<Entity>;
 
-    fn fetch(&mut self, entity: Entity) -> Option<Self::Item>;
+    /// # Safety
+    ///
+    /// 调用方必须确保本次返回的项（如果有）不会与先前调用所返回且仍存活的项违反别名规则
+    unsafe fn fetch(&mut self, entity: Entity) -> Option<Self::Item>;
 }
 
 pub struct ReadFetch<'w, T> {
-    storage: SparseSetRawParts<T>,
-    _marker: PhantomData<&'w T>,
+    storage: SparseSetRawParts<'w, T>,
 }
 
 pub struct WriteFetch<'w, T> {
-    storage: SparseSetRawParts<T>,
-    _marker: PhantomData<&'w mut T>,
+    storage: SparseSetRawParts<'w, T>,
 }
 
-impl<'w, T: 'w> Fetch<'w> for ReadFetch<'w, T> {
+unsafe impl<'w, T: 'w> Fetch<'w> for ReadFetch<'w, T> {
     type Item = &'w T;
 
-    fn fetch(&mut self, entity: Entity) -> Option<Self::Item> {
-        unsafe { self.storage.get(entity) }
+    unsafe fn fetch(&mut self, entity: Entity) -> Option<Self::Item> {
+        self.storage.get(entity)
     }
 
     fn candidate_len(&self) -> usize {
         self.storage.len()
     }
 
-    unsafe fn candidate_at(&self, index: usize) -> Option<Entity> {
-        unsafe { self.storage.entity_at(index) }
+    fn candidate_at(&self, index: usize) -> Option<Entity> {
+        self.storage.entity_at(index)
     }
 }
 
-impl<'w, T: 'w> Fetch<'w> for WriteFetch<'w, T> {
+unsafe impl<'w, T: 'w> Fetch<'w> for WriteFetch<'w, T> {
     type Item = &'w mut T;
 
-    fn fetch(&mut self, entity: Entity) -> Option<Self::Item> {
+    unsafe fn fetch(&mut self, entity: Entity) -> Option<Self::Item> {
         unsafe { self.storage.get_mut(entity) }
     }
 
@@ -216,8 +224,8 @@ impl<'w, T: 'w> Fetch<'w> for WriteFetch<'w, T> {
         self.storage.len()
     }
 
-    unsafe fn candidate_at(&self, index: usize) -> Option<Entity> {
-        unsafe { self.storage.entity_at(index) }
+    fn candidate_at(&self, index: usize) -> Option<Entity> {
+        self.storage.entity_at(index)
     }
 }
 
@@ -240,13 +248,13 @@ macro_rules! impl_fetch {
             }
         }
 
-        impl<'w, $($T: Fetch<'w>),*> Fetch<'w> for ($($T,)*) {
+        unsafe impl<'w, $($T: Fetch<'w>),*> Fetch<'w> for ($($T,)*) {
             type Item = ($($T::Item,)*);
 
-            fn fetch(&mut self, entity: Entity) -> Option<Self::Item> {
+            unsafe fn fetch(&mut self, entity: Entity) -> Option<Self::Item> {
                 Some((
                     $(
-                        self.$n.fetch(entity)?,
+                        unsafe { self.$n.fetch(entity)? },
                     )*
                 ))
             }
@@ -255,11 +263,11 @@ macro_rules! impl_fetch {
                 self.candidate_source().1
             }
 
-            unsafe fn candidate_at(&self, index: usize) -> Option<Entity> {
+            fn candidate_at(&self, index: usize) -> Option<Entity> {
                 let (candidate, _) = self.candidate_source();
                 match candidate {
                     $(
-                        $n => unsafe {
+                        $n => {
                             self.$n.candidate_at(index)
                         },
                     )*
@@ -284,6 +292,9 @@ mod tests {
 
     #[derive(Component)]
     struct Health(i32);
+
+    #[derive(Component)]
+    struct Armor(i32);
 
     #[test]
     fn read_query_returns_all_matching_components() {
@@ -329,6 +340,42 @@ mod tests {
         rows.sort_unstable();
 
         assert_eq!(rows, [(1, 10), (3, 30)]);
+    }
+
+    #[test]
+    fn three_component_query_joins_by_entity_and_skips_incomplete_rows() {
+        let mut world = World::new();
+        world.spawn((Position(1), Velocity(10), Health(100)));
+        world.spawn((Position(2), Velocity(20)));
+        world.spawn((Velocity(30), Health(300)));
+        world.spawn((Position(4), Health(400)));
+        world.spawn((Position(5), Velocity(50), Health(500)));
+
+        let mut rows = world
+            .query::<(&Position, &Velocity, &Health)>()
+            .map(|(position, velocity, health)| (position.0, velocity.0, health.0))
+            .collect::<Vec<_>>();
+        rows.sort_unstable();
+
+        assert_eq!(rows, [(1, 10, 100), (5, 50, 500)]);
+    }
+
+    #[test]
+    fn four_component_query_joins_and_mutates_matching_entities() {
+        let mut world = World::new();
+        let matched = world.spawn((Position(1), Velocity(10), Health(100), Armor(1000)));
+        let missing_armor = world.spawn((Position(2), Velocity(20), Health(200)));
+        let missing_health = world.spawn((Position(3), Velocity(30), Armor(3000)));
+
+        for (position, velocity, health, armor) in
+            world.query::<(&mut Position, &Velocity, &Health, &Armor)>()
+        {
+            position.0 += velocity.0 + health.0 + armor.0;
+        }
+
+        assert_eq!(world.get::<Position>(matched).unwrap().unwrap().0, 1111);
+        assert_eq!(world.get::<Position>(missing_armor).unwrap().unwrap().0, 2);
+        assert_eq!(world.get::<Position>(missing_health).unwrap().unwrap().0, 3);
     }
 
     #[test]

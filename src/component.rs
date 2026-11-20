@@ -19,15 +19,14 @@ impl<T: Component> Storage for SparseSet<T> {
     }
 }
 
+#[derive(Default)]
 pub struct ComponentRegistry {
     storages: HashMap<TypeId, Box<dyn Storage>>,
 }
 
 impl ComponentRegistry {
     pub fn new() -> Self {
-        Self {
-            storages: HashMap::new(),
-        }
+        Self::default()
     }
 
     pub fn insert<T: Component>(&mut self, entity: Entity, component: T) -> Option<T> {
@@ -78,7 +77,7 @@ impl ComponentRegistry {
         }
     }
 
-    pub fn raw_parts_mut<T: Component>(&mut self) -> Option<SparseSetRawParts<T>> {
+    pub fn raw_parts_mut<T: Component>(&mut self) -> Option<SparseSetRawParts<'_, T>> {
         Some(self.get_storage_mut::<T>()?.raw_parts_mut())
     }
 }

@@ -11,6 +11,6 @@ mod world;
 pub use bundle::Bundle;
 pub use component::{Component, ComponentRegistry};
 pub use entity::Entity;
-pub use query::{Access, AccessKind, Fetch, Query, QueryData};
-pub use recs_macro::Component;
 pub use world::World;
+
+pub use recs_macro::Component;

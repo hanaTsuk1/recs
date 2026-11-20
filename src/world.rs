@@ -6,6 +6,7 @@ use crate::{
     query::{Query, QueryData},
 };
 
+#[derive(Default)]
 pub struct World {
     entities: Entities,
     pub(crate) components: ComponentRegistry,
@@ -13,10 +14,7 @@ pub struct World {
 
 impl World {
     pub fn new() -> Self {
-        Self {
-            entities: Entities::new(),
-            components: ComponentRegistry::new(),
-        }
+        Self::default()
     }
 
     fn check(&self, entity: Entity) -> RecsResult<()> {
