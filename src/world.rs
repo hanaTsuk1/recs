@@ -1,9 +1,14 @@
+use std::marker::PhantomData;
+
 use crate::{
+    access::validate_access_or_panic,
     bundle::Bundle,
     component::{Component, ComponentRegistry},
     entity::{Entities, Entity},
     error::{RecsError, RecsResult},
     query::{Query, QueryData},
+    sparse_set::SparseSetRawParts,
+    system::{System, SystemParam},
 };
 
 #[derive(Default)]
@@ -60,10 +65,40 @@ impl World {
     }
 
     pub fn query<Q: QueryData>(&mut self) -> Query<'_, Q> {
-        Query::init(self)
+        validate_access_or_panic(Q::init_access);
+        let cell = WorldCell::new(self);
+        // SAFETY: `QueryData` 的`init_access()` 已保证通过冲突检查
+        unsafe { Query::init(&cell) }
+    }
+
+    pub fn run_system<'w, S, P>(&'w mut self, mut system: S)
+    where
+        S: System<'w, P>,
+        P: SystemParam<'w>,
+    {
+        let cell = WorldCell::new(self);
+        system.run(&cell);
     }
 }
 
+pub struct WorldCell<'w> {
+    world: *mut World,
+    _marker: PhantomData<&'w mut World>,
+}
+
+impl<'w> WorldCell<'w> {
+    pub fn new(world: &'w mut World) -> Self {
+        Self {
+            world,
+            _marker: PhantomData,
+        }
+    }
+
+    pub unsafe fn raw_parts_mut<T: Component>(&self) -> Option<SparseSetRawParts<'w, T>> {
+        let world = unsafe { &mut *self.world };
+        world.components.raw_parts_mut::<T>()
+    }
+}
 #[cfg(test)]
 mod tests {
     use crate::Component;

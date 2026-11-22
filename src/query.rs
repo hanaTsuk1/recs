@@ -1,43 +1,26 @@
-use std::{
-    any::{TypeId, type_name},
-    collections::HashMap,
-    marker::PhantomData,
-};
-
 use variadics_please::{all_tuples, all_tuples_enumerated};
 
 use crate::{
-    Component,
-    entity::Entity,
-    error::{RecsError, RecsResult},
-    sparse_set::SparseSetRawParts,
-    world::World,
+    Component, access::Access, entity::Entity, sparse_set::SparseSetRawParts, system::SystemParam,
+    world::WorldCell,
 };
 
 pub struct Query<'w, T: QueryData> {
     fetch: Option<T::Fetch<'w>>,
     cursor: usize,
-    _marker: PhantomData<&'w mut World>,
 }
 
 impl<'w, T: QueryData> Query<'w, T> {
-    pub fn init(world: &'w mut World) -> Self {
-        let world_ptr = world as *mut World;
-        let access = T::access();
-        if let Err(err) = validate_access(access) {
-            panic!("query access conflict: {err:?}")
-        }
-        // SAFETY: `QueryData` 的`access()` 已保证通过冲突检查
-        let fetch = unsafe { T::init(world_ptr) };
-        Self {
-            fetch,
-            cursor: 0,
-            _marker: PhantomData,
-        }
+    /// # Safety
+    ///
+    /// 调用前，`init_access` 声明的访问集合必须已通过冲突检查
+    pub unsafe fn init(world: &WorldCell<'w>) -> Self {
+        let fetch = unsafe { T::init_fetch(world) };
+        Self { fetch, cursor: 0 }
     }
 }
 
-impl<'w, T: QueryData + 'w> Iterator for Query<'w, T> {
+impl<'w, T: QueryData> Iterator for Query<'w, T> {
     type Item = T::Item<'w>;
 
     fn next(&mut self) -> Option<Self::Item> {
@@ -61,35 +44,16 @@ impl<'w, T: QueryData + 'w> Iterator for Query<'w, T> {
     }
 }
 
-pub struct Access {
-    kind: AccessKind,
-    type_id: TypeId,
-    type_name: &'static str,
-}
-
-#[derive(PartialEq)]
-pub enum AccessKind {
-    Read,
-    Write,
-}
-
-fn validate_access(accesses: Vec<Access>) -> RecsResult<()> {
-    let mut seen = HashMap::<TypeId, Access>::new();
-
-    for access in accesses {
-        if let Some(previous) = seen.get(&access.type_id) {
-            if previous.kind != AccessKind::Read || access.kind != AccessKind::Read {
-                return Err(RecsError::AccessConflict {
-                    name: access.type_name,
-                });
-            }
-        } else {
-            seen.insert(access.type_id, access);
-        }
+unsafe impl<'w, T: QueryData> SystemParam<'w> for Query<'w, T> {
+    unsafe fn get_param(world: &WorldCell<'w>) -> Self {
+        unsafe { Query::init(world) }
     }
 
-    Ok(())
+    fn init_access(access: &mut Access) {
+        T::init_access(access);
+    }
 }
+
 /// # Safety
 ///
 /// 实现者必须确保`access()`准确列出访问类型
@@ -104,26 +68,22 @@ pub unsafe trait QueryData {
     /// # Safety
     ///
     /// 调用方需独占world，完成fetch的初始化
-    unsafe fn init<'w>(world: *mut World) -> Option<Self::Fetch<'w>>;
-    fn access() -> Vec<Access>;
+    unsafe fn init_fetch<'w>(world: &WorldCell<'w>) -> Option<Self::Fetch<'w>>;
+
+    fn init_access(access: &mut Access);
 }
 
 unsafe impl<T: Component> QueryData for &T {
     type Item<'w> = &'w T;
     type Fetch<'w> = ReadFetch<'w, T>;
 
-    unsafe fn init<'w>(world: *mut World) -> Option<Self::Fetch<'w>> {
-        let world = unsafe { &mut *world };
-        let storage = world.components.raw_parts_mut::<T>()?;
+    unsafe fn init_fetch<'w>(world: &WorldCell<'w>) -> Option<Self::Fetch<'w>> {
+        let storage = unsafe { world.raw_parts_mut::<T>() }?;
         Some(ReadFetch { storage })
     }
 
-    fn access() -> Vec<Access> {
-        vec![Access {
-            kind: AccessKind::Read,
-            type_id: TypeId::of::<T>(),
-            type_name: type_name::<T>(),
-        }]
+    fn init_access(access: &mut Access) {
+        access.add_read::<T>();
     }
 }
 
@@ -131,18 +91,13 @@ unsafe impl<T: Component> QueryData for &mut T {
     type Item<'w> = &'w mut T;
     type Fetch<'w> = WriteFetch<'w, T>;
 
-    unsafe fn init<'w>(world: *mut World) -> Option<Self::Fetch<'w>> {
-        let world = unsafe { &mut *world };
-        let storage = world.components.raw_parts_mut::<T>()?;
+    unsafe fn init_fetch<'w>(world: &WorldCell<'w>) -> Option<Self::Fetch<'w>> {
+        let storage = unsafe { world.raw_parts_mut::<T>() }?;
         Some(WriteFetch { storage })
     }
 
-    fn access() -> Vec<Access> {
-        vec![Access {
-            kind: AccessKind::Write,
-            type_id: TypeId::of::<T>(),
-            type_name: type_name::<T>(),
-        }]
+    fn init_access(access: &mut Access) {
+        access.add_write::<T>();
     }
 }
 
@@ -152,20 +107,18 @@ macro_rules! impl_query_data {
             type Item<'w> = ($($T::Item<'w>),*);
             type Fetch<'w> = ($($T::Fetch<'w>),*);
 
-            unsafe fn init<'w>(world: *mut World) -> Option<Self::Fetch<'w>> {
+            unsafe fn init_fetch<'w>(world: &WorldCell<'w>) -> Option<Self::Fetch<'w>> {
                 Some((
                     $(
-                        unsafe { $T::init(world)? },
+                        unsafe { $T::init_fetch(world)? },
                     )*
                 ))
             }
 
-            fn access() -> Vec<Access> {
-                let mut result = vec![];
+            fn init_access(access: &mut Access) {
                 $(
-                    result.extend($T::access());
+                    $T::init_access(access);
                 )*
-                result
             }
         }
     };

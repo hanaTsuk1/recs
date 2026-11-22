@@ -107,6 +107,18 @@ sparse set 解决了单个类型 component 的存储，现在要管理不同类�
 
 由于world独占，component的存储不会发生变化，只需要保证查询的类型读写本身不重叠，最终可以保证操作安全
 
+
+
+## system
+
+目前查询需要直接通过world调用，为了更加方便地访问world，我们需要system
+
+为了让普通函数能变成system，只需要函数参数满足特定条件，给函数实现blanket impl就可以了
+
+对于查询，需要把检测冲突的机制提前，来保证同一个system内多个Query不要冲突
+
+
+
 ## benchmark
 
 基准测试位于独立 workspace 子 crate `benches/`。运行方式和 workload 说明见 [benches/README.md](benches/README.md)。
