@@ -8,7 +8,7 @@ use crate::{
     error::{RecsError, RecsResult},
     query::{Query, QueryData},
     sparse_set::SparseSetRawParts,
-    system::{System, SystemParam},
+    system::{IntoSystem, System, SystemParam},
 };
 
 #[derive(Default)]
@@ -71,11 +71,13 @@ impl World {
         unsafe { Query::init(&cell) }
     }
 
-    pub fn run_system<'w, S, P>(&'w mut self, mut system: S)
+    pub fn run_system<S, P>(&mut self, system: S)
     where
-        S: System<'w, P>,
-        P: SystemParam<'w>,
+        P: SystemParam,
+        for<'a> &'a mut S: FnMut(P),
+        S: IntoSystem<fn(P)>,
     {
+        let mut system = system.into_system();
         let cell = WorldCell::new(self);
         system.run(&cell);
     }

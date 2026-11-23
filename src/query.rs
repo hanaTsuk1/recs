@@ -44,8 +44,10 @@ impl<'w, T: QueryData> Iterator for Query<'w, T> {
     }
 }
 
-unsafe impl<'w, T: QueryData> SystemParam<'w> for Query<'w, T> {
-    unsafe fn get_param(world: &WorldCell<'w>) -> Self {
+unsafe impl<T: QueryData> SystemParam for Query<'_, T> {
+    type Param<'w> = Query<'w, T>;
+
+    unsafe fn get_param<'w>(world: &WorldCell<'w>) -> Self::Param<'w> {
         unsafe { Query::init(world) }
     }
 
