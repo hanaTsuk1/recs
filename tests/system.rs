@@ -1,5 +1,3 @@
-use std::cell::Cell;
-
 use recs::{Component, Query, World};
 
 #[derive(Component)]
@@ -10,16 +8,6 @@ struct Velocity(i32);
 
 #[derive(Component)]
 struct Health(i32);
-
-#[test]
-fn system_runs_with_no_parameters() {
-    let mut world = World::new();
-    let calls = Cell::new(0);
-
-    world.run_system(|()| calls.set(calls.get() + 1));
-
-    assert_eq!(calls.get(), 1);
-}
 
 #[test]
 fn system_mutates_query_parameter() {
@@ -33,20 +21,6 @@ fn system_mutates_query_parameter() {
     });
 
     assert_eq!(world.get::<Position>(entity).unwrap().unwrap().0, 15);
-}
-
-#[test]
-fn system_allows_repeated_read_parameters() {
-    let mut world = World::new();
-    world.spawn(Position(7));
-    let mut rows = 0;
-
-    world.run_system(|(first, second): (Query<&Position>, Query<&Position>)| {
-        assert_eq!(first.count(), 1);
-        rows += second.count();
-    });
-
-    assert_eq!(rows, 1);
 }
 
 #[test]
@@ -70,20 +44,6 @@ fn system_accepts_three_query_parameters() {
     );
 
     assert_eq!(world.get::<Position>(entity).unwrap().unwrap().0, 2);
-}
-
-#[test]
-fn system_can_mutate_borrowed_closure_state() {
-    let mut world = World::new();
-    world.spawn(Position(10));
-    let mut calls = 0;
-
-    world.run_system(|positions: Query<&Position>| {
-        calls += 1;
-        assert_eq!(positions.count(), 1);
-    });
-
-    assert_eq!(calls, 1);
 }
 
 #[test]

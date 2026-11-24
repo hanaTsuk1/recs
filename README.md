@@ -117,6 +117,12 @@ sparse set 解决了单个类型 component 的存储，现在要管理不同类�
 
 对于查询，需要把检测冲突的机制提前，来保证同一个system内多个Query不要冲突
 
+### schedule
+
+如果只是一个system运行还好，要是一群system就需要保障运行的**顺序**
+
+和参数的冲突不同，参数冲突则system就不能运行，system之间冲突就意味着它们不能一起运行
+
 
 
 ## benchmark

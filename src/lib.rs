@@ -6,6 +6,7 @@ mod component;
 mod entity;
 mod error;
 mod query;
+mod schedule;
 mod sparse_set;
 mod system;
 mod world;
@@ -14,6 +15,7 @@ pub use bundle::Bundle;
 pub use component::{Component, ComponentRegistry};
 pub use entity::Entity;
 pub use query::Query;
+pub use schedule::{IntoSystemConfig, Schedule};
 pub use world::World;
 
 pub use recs_macro::Component;

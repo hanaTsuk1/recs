@@ -1,4 +1,4 @@
-use std::marker::PhantomData;
+use std::{any::Any, marker::PhantomData};
 
 use variadics_please::all_tuples;
 
@@ -7,7 +7,7 @@ use crate::{
     world::WorldCell,
 };
 
-pub trait System {
+pub trait System: Any {
     fn init_access(&self, access: &mut Access);
 
     fn run(&mut self, world: &WorldCell<'_>);
@@ -63,9 +63,9 @@ pub struct FunctionSystem<T, Marker> {
     _marker: PhantomData<Marker>,
 }
 
-impl<T, Marker> System for FunctionSystem<T, Marker>
+impl<T, Marker: 'static> System for FunctionSystem<T, Marker>
 where
-    T: SystemParamFunction<Marker>,
+    T: SystemParamFunction<Marker> + 'static,
 {
     fn init_access(&self, access: &mut Access) {
         <<T as SystemParamFunction<Marker>>::Param as SystemParam>::init_access(access);
@@ -86,11 +86,12 @@ pub trait IntoSystem<Marker> {
     fn into_system(self) -> Self::System;
 }
 
-impl<T, Marker> IntoSystem<Marker> for T
+impl<T, P: SystemParam + 'static> IntoSystem<fn(P)> for T
 where
-    T: SystemParamFunction<Marker>,
+    for<'a> &'a mut T: FnMut(P),
+    T: SystemParamFunction<fn(P)> + 'static,
 {
-    type System = FunctionSystem<T, Marker>;
+    type System = FunctionSystem<T, fn(P)>;
 
     fn into_system(self) -> Self::System {
         FunctionSystem {
