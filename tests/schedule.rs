@@ -274,6 +274,56 @@ fn executor_can_be_replaced_between_runs() {
 }
 
 #[test]
+fn ordering_accepts_an_already_configured_system_as_argument() {
+    let log = Arc::new(Mutex::new(Vec::new()));
+    let first_log = log.clone();
+    let first = move |_: ()| first_log.lock().unwrap().push("first");
+    let second_log = log.clone();
+    let second = move |_: ()| second_log.lock().unwrap().push("second");
+
+    // 传入的不是裸闭包，而是配置过的 second，
+    // before 必须取到 second 本身的 system 类型，而不是 SystemConfig 的类型
+    let ordering_target = second.clone().after(first.clone());
+
+    let mut schedule = Schedule::default();
+    schedule.set_executor(SingleThreadedExecutor);
+    schedule.add_system(first.before(ordering_target));
+    schedule.add_system(second);
+
+    schedule.run(&mut World::new());
+
+    assert_eq!(*log.lock().unwrap(), ["first", "second"]);
+}
+
+#[test]
+fn ordering_uses_only_the_configured_system_type() {
+    let log = Arc::new(Mutex::new(Vec::new()));
+    let third_log = log.clone();
+    let third = move |_: ()| third_log.lock().unwrap().push("third");
+    let second_log = log.clone();
+    let second = move |_: ()| second_log.lock().unwrap().push("second");
+    let first_log = log.clone();
+    let first = move |_: ()| first_log.lock().unwrap().push("first");
+
+    // 参数是 second.before(third)：只记录 first -> second，
+    // 参数里那条 second -> third 属于另一份配置，不会跟着生效
+    let ordering_target = second.clone().before(third.clone());
+
+    let mut schedule = Schedule::default();
+    schedule.set_executor(SingleThreadedExecutor);
+    schedule.add_system(first.before(ordering_target));
+    schedule.add_system(second);
+    schedule.add_system(third);
+
+    schedule.run(&mut World::new());
+
+    let labels = log.lock().unwrap();
+    assert_eq!(labels.len(), 3);
+    // third 没有任何约束，可以和 first 同批；second 依赖 first，所以在最后
+    assert_eq!(labels[2], "second");
+}
+
+#[test]
 #[should_panic(expected = "failed to build schedule plan")]
 fn run_panics_for_an_unregistered_dependency_system() {
     let mut schedule = Schedule::default();

@@ -73,6 +73,7 @@ impl Schedule {
 pub struct SystemConfig<T: System> {
     system: T,
     system_type_id: TypeId,
+    system_type_name: &'static str,
     before: Vec<SystemConfigOrderItem>,
     after: Vec<SystemConfigOrderItem>,
 }
@@ -83,18 +84,20 @@ struct SystemConfigOrderItem {
 }
 
 impl<T: System> SystemConfig<T> {
-    fn before<S: System, C: IntoSystemConfig<S>>(mut self, _config: C) -> SystemConfig<T> {
+    fn before<S: System, C: IntoSystemConfig<S>>(mut self, config: C) -> SystemConfig<T> {
+        let config = config.into_config();
         self.before.push(SystemConfigOrderItem {
-            type_id: TypeId::of::<C>(),
-            type_name: type_name::<C>(),
+            type_id: config.system_type_id,
+            type_name: config.system_type_name,
         });
         self
     }
 
-    fn after<S: System, C: IntoSystemConfig<S>>(mut self, _config: C) -> SystemConfig<T> {
+    fn after<S: System, C: IntoSystemConfig<S>>(mut self, config: C) -> SystemConfig<T> {
+        let config = config.into_config();
         self.after.push(SystemConfigOrderItem {
-            type_id: TypeId::of::<C>(),
-            type_name: type_name::<C>(),
+            type_id: config.system_type_id,
+            type_name: config.system_type_name,
         });
         self
     }
@@ -131,6 +134,7 @@ where
         SystemConfig {
             system: T::into_system(self),
             system_type_id: TypeId::of::<T>(),
+            system_type_name: type_name::<T>(),
             before: vec![],
             after: vec![],
         }
