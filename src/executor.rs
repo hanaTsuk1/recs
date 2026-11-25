@@ -1,7 +1,7 @@
-use crate::{Schedule, World, world::WorldCell};
+use crate::{World, schedule::SystemPlan, world::WorldCell};
 
 pub trait SystemExecutor {
-    fn run(&mut self, schedule: &mut Schedule, world: &mut World);
+    fn run(&mut self, plan: &mut SystemPlan<'_>, world: &mut World);
 }
 
 pub struct SingleThreadedExecutor;
@@ -9,12 +9,10 @@ pub struct SingleThreadedExecutor;
 pub struct MultiThreadedExecutor;
 
 impl SystemExecutor for SingleThreadedExecutor {
-    fn run(&mut self, schedule: &mut Schedule, world: &mut World) {
+    fn run(&mut self, plan: &mut SystemPlan<'_>, world: &mut World) {
         let cell = WorldCell::new(world);
-        let batches = schedule.build_plan();
-        for batch in batches {
-            let systems = schedule.get_systems(&batch);
-            for system in systems {
+        for index in 0..plan.batch_count() {
+            for system in plan.batch_systems(index) {
                 system.run(&cell);
             }
         }
@@ -22,16 +20,12 @@ impl SystemExecutor for SingleThreadedExecutor {
 }
 
 impl SystemExecutor for MultiThreadedExecutor {
-    fn run(&mut self, schedule: &mut Schedule, world: &mut World) {
+    fn run(&mut self, plan: &mut SystemPlan<'_>, world: &mut World) {
         let cell = WorldCell::new(world);
-        let batches = schedule.build_plan();
-        for batch in batches {
-            let systems = schedule.get_systems(&batch);
+        for index in 0..plan.batch_count() {
             std::thread::scope(|scope| {
-                for system in systems {
-                    scope.spawn(|| {
-                        system.run(&cell);
-                    });
+                for system in plan.batch_systems(index) {
+                    scope.spawn(|| system.run(&cell));
                 }
             });
         }

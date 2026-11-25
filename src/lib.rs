@@ -15,6 +15,7 @@ mod world;
 pub use bundle::Bundle;
 pub use component::{Component, ComponentRegistry};
 pub use entity::Entity;
+pub use executor::{MultiThreadedExecutor, SingleThreadedExecutor};
 pub use query::Query;
 pub use schedule::{IntoSystemConfig, Schedule};
 pub use world::World;
