@@ -7,7 +7,7 @@ use crate::{
     entity::{Entities, Entity},
     error::{RecsError, RecsResult},
     query::{Query, QueryData},
-    sparse_set::SparseSetRawParts,
+    sparse_set::{SparseSetRawParts, SparseSetRawPartsMut},
     system::{IntoSystem, System},
 };
 
@@ -91,9 +91,14 @@ impl<'w> WorldCell<'w> {
         }
     }
 
-    pub unsafe fn raw_parts_mut<T: Component>(&self) -> Option<SparseSetRawParts<'w, T>> {
-        let world = unsafe { &mut *self.world };
-        world.components.raw_parts_mut::<T>()
+    pub unsafe fn raw_parts<T: Component>(&self) -> Option<SparseSetRawParts<'w, T>> {
+        let components = unsafe { &(*self.world).components };
+        components.raw_parts::<T>()
+    }
+
+    pub unsafe fn raw_parts_mut<T: Component>(&self) -> Option<SparseSetRawPartsMut<'w, T>> {
+        let components = unsafe { &(*self.world).components };
+        unsafe { components.raw_parts_mut::<T>() }
     }
 }
 #[cfg(test)]

@@ -13,6 +13,16 @@ pub struct SparseSetRawParts<'a, T> {
     sparse_len: usize,
     entities: *const Entity,
     entity_len: usize,
+    dense: *const T,
+    dense_len: usize,
+    _marker: PhantomData<&'a SparseSet<T>>,
+}
+
+pub struct SparseSetRawPartsMut<'a, T> {
+    sparse: *const Option<usize>,
+    sparse_len: usize,
+    entities: *const Entity,
+    entity_len: usize,
     dense: *mut T,
     dense_len: usize,
     _marker: PhantomData<&'a mut SparseSet<T>>,
@@ -90,8 +100,20 @@ impl<T> SparseSet<T> {
         self.get(entity).is_some()
     }
 
-    pub fn raw_parts_mut(&mut self) -> SparseSetRawParts<'_, T> {
+    pub fn raw_parts(&self) -> SparseSetRawParts<'_, T> {
         SparseSetRawParts {
+            sparse: self.sparse.as_ptr(),
+            sparse_len: self.sparse.len(),
+            entities: self.entities.as_ptr(),
+            entity_len: self.entities.len(),
+            dense: self.dense.as_ptr(),
+            dense_len: self.dense.len(),
+            _marker: PhantomData,
+        }
+    }
+
+    pub fn raw_parts_mut(&mut self) -> SparseSetRawPartsMut<'_, T> {
+        SparseSetRawPartsMut {
             sparse: self.sparse.as_ptr(),
             sparse_len: self.sparse.len(),
             entities: self.entities.as_ptr(),
@@ -104,6 +126,43 @@ impl<T> SparseSet<T> {
 }
 
 impl<'a, T> SparseSetRawParts<'a, T> {
+    fn get_dense_index(&self, entity: Entity) -> Option<usize> {
+        let sparse_index = entity.index() as usize;
+        if sparse_index >= self.sparse_len {
+            return None;
+        }
+
+        let dense_index = unsafe { *self.sparse.add(sparse_index) }?;
+        if dense_index >= self.dense_len || dense_index >= self.entity_len {
+            return None;
+        }
+
+        if unsafe { *self.entities.add(dense_index) } == entity {
+            Some(dense_index)
+        } else {
+            None
+        }
+    }
+
+    pub fn get(&self, entity: Entity) -> Option<&'a T> {
+        let index = self.get_dense_index(entity)?;
+        Some(unsafe { &*self.dense.add(index) })
+    }
+
+    pub fn len(&self) -> usize {
+        self.entity_len
+    }
+
+    pub fn entity_at(&self, index: usize) -> Option<Entity> {
+        if index >= self.entity_len {
+            return None;
+        }
+
+        Some(unsafe { *self.entities.add(index) })
+    }
+}
+
+impl<'a, T> SparseSetRawPartsMut<'a, T> {
     fn get_dense_index(&self, entity: Entity) -> Option<usize> {
         let sparse_index = entity.index() as usize;
         if sparse_index >= self.sparse_len {

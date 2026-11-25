@@ -1,7 +1,11 @@
 use variadics_please::{all_tuples, all_tuples_enumerated};
 
 use crate::{
-    Component, access::Access, entity::Entity, sparse_set::SparseSetRawParts, system::SystemParam,
+    Component,
+    access::Access,
+    entity::Entity,
+    sparse_set::{SparseSetRawParts, SparseSetRawPartsMut},
+    system::SystemParam,
     world::WorldCell,
 };
 
@@ -80,7 +84,7 @@ unsafe impl<T: Component> QueryData for &T {
     type Fetch<'w> = ReadFetch<'w, T>;
 
     unsafe fn init_fetch<'w>(world: &WorldCell<'w>) -> Option<Self::Fetch<'w>> {
-        let storage = unsafe { world.raw_parts_mut::<T>() }?;
+        let storage = unsafe { world.raw_parts::<T>() }?;
         Some(ReadFetch { storage })
     }
 
@@ -149,7 +153,7 @@ pub struct ReadFetch<'w, T> {
 }
 
 pub struct WriteFetch<'w, T> {
-    storage: SparseSetRawParts<'w, T>,
+    storage: SparseSetRawPartsMut<'w, T>,
 }
 
 unsafe impl<'w, T: 'w> Fetch<'w> for ReadFetch<'w, T> {

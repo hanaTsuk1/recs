@@ -1,12 +1,13 @@
 use std::{
     any::{Any, TypeId},
+    cell::UnsafeCell,
     collections::HashMap,
 };
 
 use crate::{
     bundle::Bundle,
     entity::Entity,
-    sparse_set::{SparseSet, SparseSetRawParts},
+    sparse_set::{SparseSet, SparseSetRawParts, SparseSetRawPartsMut},
 };
 
 trait Storage: Any {
@@ -21,7 +22,7 @@ impl<T: Component> Storage for SparseSet<T> {
 
 #[derive(Default)]
 pub struct ComponentRegistry {
-    storages: HashMap<TypeId, Box<dyn Storage>>,
+    storages: HashMap<TypeId, UnsafeCell<Box<dyn Storage>>>,
 }
 
 impl ComponentRegistry {
@@ -37,7 +38,8 @@ impl ComponentRegistry {
             storage.insert(entity, component);
 
             let type_id = TypeId::of::<T>();
-            self.storages.insert(type_id, Box::new(storage));
+            self.storages
+                .insert(type_id, UnsafeCell::new(Box::new(storage)));
 
             None
         }
@@ -61,24 +63,40 @@ impl ComponentRegistry {
 
     fn get_storage<T: Component>(&self) -> Option<&SparseSet<T>> {
         let type_id = TypeId::of::<T>();
-        let storage: &dyn Any = self.storages.get(&type_id)?.as_ref();
-        storage.downcast_ref::<SparseSet<T>>()
+        let storage = self.storages.get(&type_id)?;
+        // SAFETY:
+        // 调用方必须保证不存在对该 Storage 的可变访问。
+        let storage = unsafe { &*storage.get() }.as_ref();
+        (storage as &dyn Any).downcast_ref::<SparseSet<T>>()
     }
 
     fn get_storage_mut<T: Component>(&mut self) -> Option<&mut SparseSet<T>> {
         let type_id = TypeId::of::<T>();
-        let storage: &mut dyn Any = self.storages.get_mut(&type_id)?.as_mut();
-        storage.downcast_mut::<SparseSet<T>>()
+        let storage = self.storages.get_mut(&type_id)?;
+        let storage = storage.get_mut().as_mut();
+        (storage as &mut dyn Any).downcast_mut::<SparseSet<T>>()
     }
 
     pub fn remove_components(&mut self, entity: Entity) {
         for storage in self.storages.values_mut() {
-            storage.remove_components(entity);
+            storage.get_mut().remove_components(entity);
         }
     }
 
-    pub fn raw_parts_mut<T: Component>(&mut self) -> Option<SparseSetRawParts<'_, T>> {
-        Some(self.get_storage_mut::<T>()?.raw_parts_mut())
+    pub(crate) fn raw_parts<T: Component>(&self) -> Option<SparseSetRawParts<'_, T>> {
+        Some(self.get_storage::<T>()?.raw_parts())
+    }
+
+    /// # Safety
+    ///
+    /// 调用方必须保证该 storage 在返回的 raw parts 存活期间没有重叠的共享或可变访问，
+    /// 且不会发生结构性修改。
+    pub(crate) unsafe fn raw_parts_mut<T: Component>(&self) -> Option<SparseSetRawPartsMut<'_, T>> {
+        let type_id = TypeId::of::<T>();
+        let storage = self.storages.get(&type_id)?;
+        let storage = unsafe { &mut *storage.get() }.as_mut();
+        let storage = (storage as &mut dyn Any).downcast_mut::<SparseSet<T>>()?;
+        Some(storage.raw_parts_mut())
     }
 }
 

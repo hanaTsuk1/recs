@@ -1,4 +1,4 @@
-use std::{any::Any, marker::PhantomData};
+use std::marker::PhantomData;
 
 use variadics_please::all_tuples;
 
@@ -7,7 +7,7 @@ use crate::{
     world::WorldCell,
 };
 
-pub trait System: Any {
+pub trait System: 'static {
     fn init_access(&self, access: &mut Access);
 
     fn run(&mut self, world: &WorldCell<'_>);
