@@ -30,7 +30,7 @@ fn run_executes_systems_in_configured_order() {
 }
 
 #[test]
-#[should_panic(expected = "failed to run schedule")]
+#[should_panic(expected = "failed to build schedule plan")]
 fn run_panics_for_an_unregistered_dependency_system() {
     let mut schedule = Schedule::default();
     schedule.add_system(system_one.before(system_two));
@@ -39,7 +39,7 @@ fn run_panics_for_an_unregistered_dependency_system() {
 }
 
 #[test]
-#[should_panic(expected = "failed to run schedule")]
+#[should_panic(expected = "failed to build schedule plan")]
 fn run_panics_for_circular_dependencies() {
     let mut schedule = Schedule::default();
     schedule.add_system(system_one.before(system_two));

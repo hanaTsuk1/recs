@@ -123,7 +123,15 @@ sparse set 解决了单个类型 component 的存储，现在要管理不同类�
 
 和参数的冲突不同，参数冲突则system就不能运行，system之间冲突就意味着它们不能一起运行
 
+### 多线程调度
 
+通过将system分批，可以将一批内的多个system通过多线程的方式，同时执行
+
+worldcell要通过共享引用传递给多个线程，需要实现sync
+
+system要传递进线程，需要实现send
+
+component提供可读和可写，需要同时实现send + sync
 
 ## benchmark
 

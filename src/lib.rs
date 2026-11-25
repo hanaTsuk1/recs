@@ -5,6 +5,7 @@ mod bundle;
 mod component;
 mod entity;
 mod error;
+mod executor;
 mod query;
 mod schedule;
 mod sparse_set;

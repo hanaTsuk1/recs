@@ -7,14 +7,15 @@ use crate::{
     World,
     access::Access,
     error::{RecsError, RecsResult},
+    executor::{MultiThreadedExecutor, SystemExecutor},
     system::{FunctionSystem, IntoSystem, System, SystemParam, SystemParamFunction},
-    world::WorldCell,
 };
 
 #[derive(Default)]
 pub struct Schedule {
     graph: DependencyGraph,
 }
+
 impl Schedule {
     pub fn add_system<T: System>(&mut self, system_config: impl IntoSystemConfig<T>) -> SystemId {
         let system_config = system_config.into_config();
@@ -22,21 +23,25 @@ impl Schedule {
     }
 
     pub fn run(&mut self, world: &mut World) {
-        let cell = WorldCell::new(world);
-        self.run_inner(&cell).expect("failed to run schedule");
+        let mut executor = MultiThreadedExecutor;
+        executor.run(self, world);
     }
 
-    fn run_inner(&mut self, world: &WorldCell<'_>) -> RecsResult<()> {
+    pub fn build_plan(&mut self) -> Vec<Vec<SystemId>> {
+        match self.build_plan_inner() {
+            Ok(batches) => batches,
+            Err(err) => panic!("failed to build schedule plan: {:?}", err),
+        }
+    }
+
+    fn build_plan_inner(&mut self) -> RecsResult<Vec<Vec<SystemId>>> {
         self.graph.build_dependencies()?;
         let dependencies = self.graph.build_system_dependencies();
-        let mut batches = self.graph.build_batches(&dependencies)?;
-        for batch in &mut batches {
-            for system_id in batch {
-                let system = self.graph.get_system_mut(*system_id);
-                system.run(world);
-            }
-        }
-        Ok(())
+        self.graph.build_batches(&dependencies)
+    }
+
+    pub fn get_systems(&mut self, batch: &Vec<SystemId>) -> Vec<&mut Box<dyn System>> {
+        self.graph.get_systems(batch)
     }
 }
 
@@ -95,7 +100,7 @@ impl<T: System> IntoSystemConfig<T> for SystemConfig<T> {
 impl<T, P: SystemParam + 'static> IntoSystemConfig<FunctionSystem<T, fn(P)>> for T
 where
     for<'a> &'a mut T: FnMut(P),
-    T: SystemParamFunction<fn(P)> + 'static,
+    T: SystemParamFunction<fn(P)> + Send + 'static,
 {
     fn into_config(self) -> SystemConfig<FunctionSystem<T, fn(P)>> {
         SystemConfig {
@@ -346,9 +351,10 @@ impl DependencyGraph {
         access.validate().is_ok()
     }
 
-    fn get_system_mut(&mut self, system_id: SystemId) -> &mut Box<dyn System> {
+    fn get_systems(&mut self, system_ids: &Vec<SystemId>) -> Vec<&mut Box<dyn System>> {
         self.systems
-            .get_mut(&system_id)
-            .expect("system id must belong to this dependency graph")
+            .iter_mut()
+            .filter_map(|(system_id, system)| system_ids.contains(system_id).then_some(system))
+            .collect()
     }
 }

@@ -101,6 +101,9 @@ impl<'w> WorldCell<'w> {
         unsafe { components.raw_parts_mut::<T>() }
     }
 }
+
+unsafe impl Sync for WorldCell<'_> {}
+
 #[cfg(test)]
 mod tests {
     use crate::Component;

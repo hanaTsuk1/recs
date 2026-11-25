@@ -27,7 +27,7 @@ pub fn derive_component(input: TokenStream) -> TokenStream {
     generics
         .make_where_clause()
         .predicates
-        .push(parse_quote!(Self: 'static));
+        .push(parse_quote!(Self: Send + Sync + 'static));
 
     let (impl_generics, ty_generics, where_clause) = generics.split_for_impl();
 

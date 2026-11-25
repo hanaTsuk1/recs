@@ -10,7 +10,7 @@ use crate::{
     sparse_set::{SparseSet, SparseSetRawParts, SparseSetRawPartsMut},
 };
 
-trait Storage: Any {
+trait Storage: Any + Send + Sync {
     fn remove_components(&mut self, entity: Entity);
 }
 
@@ -100,7 +100,7 @@ impl ComponentRegistry {
     }
 }
 
-pub trait Component: 'static {}
+pub trait Component: Send + Sync + 'static {}
 
 impl<T: Component> Bundle for T {
     fn insert(self, entity: Entity, registry: &mut ComponentRegistry) {

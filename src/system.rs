@@ -7,7 +7,7 @@ use crate::{
     world::WorldCell,
 };
 
-pub trait System: 'static {
+pub trait System: Send + 'static {
     fn init_access(&self, access: &mut Access);
 
     fn run(&mut self, world: &WorldCell<'_>);
@@ -63,9 +63,9 @@ pub struct FunctionSystem<T, Marker> {
     _marker: PhantomData<Marker>,
 }
 
-impl<T, Marker: 'static> System for FunctionSystem<T, Marker>
+impl<T, Marker: Send + 'static> System for FunctionSystem<T, Marker>
 where
-    T: SystemParamFunction<Marker> + 'static,
+    T: SystemParamFunction<Marker> + Send + 'static,
 {
     fn init_access(&self, access: &mut Access) {
         <<T as SystemParamFunction<Marker>>::Param as SystemParam>::init_access(access);
@@ -89,7 +89,7 @@ pub trait IntoSystem<Marker> {
 impl<T, P: SystemParam + 'static> IntoSystem<fn(P)> for T
 where
     for<'a> &'a mut T: FnMut(P),
-    T: SystemParamFunction<fn(P)> + 'static,
+    T: SystemParamFunction<fn(P)> + Send + 'static,
 {
     type System = FunctionSystem<T, fn(P)>;
 
