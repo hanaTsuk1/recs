@@ -1,6 +1,6 @@
 use std::{
     any::{TypeId, type_name},
-    collections::{HashMap, HashSet, VecDeque},
+    collections::{HashMap, HashSet},
 };
 
 use crate::{
@@ -183,7 +183,7 @@ struct DependencyGraph {
     next_set_id: u32,
 }
 
-#[derive(PartialEq, Eq, Hash, Clone, Copy)]
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
 pub struct SystemId(u32);
 
 impl SystemId {
@@ -279,41 +279,37 @@ impl DependencyGraph {
         Ok(())
     }
 
-    fn build_system_dependencies(&self) -> HashMap<SystemId, HashSet<SystemId>> {
-        let mut dependencies = HashMap::<SystemId, HashSet<SystemId>>::new();
-
-        for system_id in 0..self.systems.len() {
-            dependencies.entry(SystemId(system_id as u32)).or_default();
-        }
+    fn build_system_dependencies(&self) -> Vec<Vec<SystemId>> {
+        let mut dependencies = vec![Vec::new(); self.systems.len()];
 
         for (from, targets) in &self.dependencies {
             for to in targets {
                 match (from, to) {
-                    (NodeId::System(a), NodeId::System(b)) => {
-                        dependencies.entry(*a).or_default().insert(*b);
-                    }
+                    (NodeId::System(a), NodeId::System(b)) => dependencies[a.index()].push(*b),
 
                     (NodeId::System(a), NodeId::Set(set)) => {
-                        for b in &self.system_sets[set] {
-                            dependencies.entry(*a).or_default().insert(*b);
-                        }
+                        dependencies[a.index()].extend(self.system_sets[set].iter().copied());
                     }
 
                     (NodeId::Set(set), NodeId::System(b)) => {
                         for a in &self.system_sets[set] {
-                            dependencies.entry(*a).or_default().insert(*b);
+                            dependencies[a.index()].push(*b);
                         }
                     }
 
                     (NodeId::Set(a), NodeId::Set(b)) => {
                         for from in &self.system_sets[a] {
-                            for to in &self.system_sets[b] {
-                                dependencies.entry(*from).or_default().insert(*to);
-                            }
+                            dependencies[from.index()].extend(self.system_sets[b].iter().copied());
                         }
                     }
                 }
             }
+        }
+
+        // 排序去重：边的顺序决定下一轮 ready 的顺序，必须确定
+        for targets in &mut dependencies {
+            targets.sort_unstable();
+            targets.dedup();
         }
 
         dependencies
@@ -328,39 +324,30 @@ impl DependencyGraph {
             })
     }
 
-    fn build_batches(
-        &self,
-        dependencies: &HashMap<SystemId, HashSet<SystemId>>,
-    ) -> RecsResult<Vec<Vec<SystemId>>> {
-        let mut in_degrees = HashMap::<SystemId, u32>::new();
+    fn build_batches(&self, dependencies: &[Vec<SystemId>]) -> RecsResult<Vec<Vec<SystemId>>> {
+        let mut in_degrees = vec![0u32; self.systems.len()];
 
-        // 初始化所有节点
-        for system_id in 0..self.systems.len() {
-            in_degrees.insert(SystemId(system_id as u32), 0);
-        }
-
-        // 统计入度
-        for targets in dependencies.values() {
+        for targets in dependencies {
             for target in targets {
-                *in_degrees.entry(*target).or_default() += 1;
+                in_degrees[target.index()] += 1;
             }
         }
 
-        // 初始 ready 集合
-        let mut ready = in_degrees
-            .iter()
-            .filter_map(|(id, degree)| (*degree == 0).then_some(*id))
-            .collect::<VecDeque<_>>();
+        // 按 SystemId（注册顺序）升序初始化，批次划分才能复现
+        let mut ready: Vec<SystemId> = (0..self.systems.len())
+            .map(|system_id| SystemId(system_id as u32))
+            .filter(|system_id| in_degrees[system_id.index()] == 0)
+            .collect();
 
         let mut batches = Vec::new();
         let mut processed = 0;
 
         while !ready.is_empty() {
             let mut batch = Vec::new();
-            let mut deferred = VecDeque::new();
+            let mut deferred = Vec::new();
 
             // 从当前 ready 中贪心选择兼容的 System
-            while let Some(candidate) = ready.pop_front() {
+            for candidate in ready.drain(..) {
                 let compatible = batch
                     .iter()
                     .all(|existing| self.can_run_together(candidate, *existing));
@@ -368,7 +355,7 @@ impl DependencyGraph {
                 if compatible {
                     batch.push(candidate);
                 } else {
-                    deferred.push_back(candidate);
+                    deferred.push(candidate);
                 }
             }
 
@@ -377,21 +364,20 @@ impl DependencyGraph {
 
             // 移除当前 Batch 的出边
             for system_id in &batch {
-                if let Some(targets) = dependencies.get(system_id) {
-                    for target in targets {
-                        let degree = in_degrees
-                            .get_mut(target)
-                            .expect("dependency target must be a registered system");
-                        *degree -= 1;
+                for target in &dependencies[system_id.index()] {
+                    let degree = &mut in_degrees[target.index()];
+                    *degree -= 1;
 
-                        if *degree == 0 {
-                            deferred.push_back(*target);
-                        }
+                    if *degree == 0 {
+                        deferred.push(*target);
                     }
                 }
             }
 
             batches.push(batch);
+
+            // 新就绪的 system 来自边表顺序，排序后下一轮的 ready 才确定
+            deferred.sort_unstable();
             ready = deferred;
         }
 
@@ -479,6 +465,59 @@ mod tests {
 
         assert_eq!(schedule.plan.len(), 2);
         assert!(schedule.plan.iter().all(|batch| batch.len() == 1));
+    }
+
+    #[test]
+    fn plan_is_deterministic_across_independent_builds() {
+        let mut plans = Vec::new();
+        for _ in 0..32 {
+            let mut schedule = Schedule::default();
+            let first = |_: ()| {};
+            let second = |_: ()| {};
+            let third = |_: ()| {};
+            schedule.add_system(first);
+            schedule.add_system(second.after(first));
+            schedule.add_system(third.after(first));
+
+            schedule.build_plan();
+            plans.push(schedule.plan.clone());
+        }
+
+        // 每个 Schedule 的 HashMap 随机种子不同，没有排序时这里会出现分歧
+        assert!(plans.windows(2).all(|pair| pair[0] == pair[1]));
+
+        // 无依赖可同批的 system 按 SystemId（注册顺序）升序排列
+        assert_eq!(
+            plans[0],
+            [vec![SystemId(0)], vec![SystemId(1), SystemId(2)]]
+        );
+    }
+
+    #[test]
+    fn plan_grouping_is_deterministic_across_independent_builds() {
+        let mut plans = Vec::new();
+        for _ in 0..32 {
+            let mut schedule = Schedule::default();
+            schedule.add_system(|_: Query<&mut Position>| {});
+            schedule.add_system(|_: Query<&Position>| {});
+            schedule.add_system(|_: ()| {});
+            schedule.add_system(|_: ()| {});
+
+            schedule.build_plan();
+            plans.push(schedule.plan.clone());
+        }
+
+        // 初始 ready 里有多个候选时，遍历顺序决定谁和冲突方同批
+        assert!(plans.windows(2).all(|pair| pair[0] == pair[1]));
+
+        // 写入方先入批，两个自由 system 跟它同批；读取方被拆到第二批
+        assert_eq!(
+            plans[0],
+            [
+                vec![SystemId(0), SystemId(2), SystemId(3)],
+                vec![SystemId(1)],
+            ]
+        );
     }
 
     #[test]

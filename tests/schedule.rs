@@ -218,6 +218,50 @@ fn single_threaded_executor_serializes_a_batch() {
 }
 
 #[test]
+fn single_threaded_executor_runs_a_batch_in_registration_order() {
+    let log = Arc::new(Mutex::new(Vec::new()));
+    let first_log = log.clone();
+    let first = move |_: ()| first_log.lock().unwrap().push("first");
+    let second_log = log.clone();
+    let second = move |_: ()| second_log.lock().unwrap().push("second");
+    let third_log = log.clone();
+    let third = move |_: ()| third_log.lock().unwrap().push("third");
+
+    // 三个无依赖、无访问冲突的 system 会落在同一批，批内按注册顺序执行
+    let mut schedule = Schedule::default();
+    schedule.set_executor(SingleThreadedExecutor);
+    schedule.add_system(first);
+    schedule.add_system(second);
+    schedule.add_system(third);
+
+    schedule.run(&mut World::new());
+
+    assert_eq!(*log.lock().unwrap(), ["first", "second", "third"]);
+}
+
+#[test]
+fn single_threaded_executor_runs_newly_ready_systems_in_registration_order() {
+    let log = Arc::new(Mutex::new(Vec::new()));
+    let first_log = log.clone();
+    let first = move |_: ()| first_log.lock().unwrap().push("first");
+    let second_log = log.clone();
+    let second = move |_: ()| second_log.lock().unwrap().push("second");
+    let third_log = log.clone();
+    let third = move |_: ()| third_log.lock().unwrap().push("third");
+
+    // second 和 third 都在 first 之后才就绪，属于同一批
+    let mut schedule = Schedule::default();
+    schedule.set_executor(SingleThreadedExecutor);
+    schedule.add_system(first.clone());
+    schedule.add_system(second.after(first.clone()));
+    schedule.add_system(third.after(first.clone()));
+
+    schedule.run(&mut World::new());
+
+    assert_eq!(*log.lock().unwrap(), ["first", "second", "third"]);
+}
+
+#[test]
 fn multithreaded_executor_picks_up_systems_added_between_runs() {
     let mut world = World::new();
     let entity = world.spawn(Position(0));
