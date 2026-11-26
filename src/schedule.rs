@@ -3,6 +3,8 @@ use std::{
     collections::{HashMap, HashSet},
 };
 
+use variadics_please::all_tuples;
+
 use crate::{
     World,
     access::Access,
@@ -132,21 +134,31 @@ impl<T: System> IntoSystemConfig<T> for SystemConfig<T> {
     }
 }
 
-impl<T, P: SystemParam + 'static> IntoSystemConfig<FunctionSystem<T, fn(P)>> for T
-where
-    for<'a> &'a mut T: FnMut(P),
-    T: SystemParamFunction<fn(P)> + Send + 'static,
-{
-    fn into_config(self) -> SystemConfig<FunctionSystem<T, fn(P)>> {
-        SystemConfig {
-            system: T::into_system(self),
-            system_type_id: TypeId::of::<T>(),
-            system_type_name: type_name::<T>(),
-            before: vec![],
-            after: vec![],
+macro_rules! impl_into_system_config {
+    ($($T:ident),*) => {
+        impl<T, $($T),*> IntoSystemConfig<FunctionSystem<T, fn($($T,)*)>> for T
+        where
+            $(
+                $T: SystemParam + 'static,
+            )*
+            for<'a> &'a mut T: FnMut($($T),*),
+            T: SystemParamFunction<fn($($T),*)> + Send + 'static,
+        {
+            fn into_config(self) -> SystemConfig<FunctionSystem<T, fn($($T),*)>> {
+                SystemConfig {
+                    system: T::into_system(self),
+                    system_type_id: TypeId::of::<T>(),
+                    system_type_name: type_name::<T>(),
+                    before: vec![],
+                    after: vec![],
+                }
+            }
         }
+
     }
 }
+
+all_tuples!(impl_into_system_config, 1, 16, T);
 
 pub struct SystemPlan<'a> {
     systems: &'a mut [Box<dyn System>],

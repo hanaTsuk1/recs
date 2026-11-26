@@ -37,7 +37,7 @@ fn query_and_commands_share_one_system() {
 
     let mut schedule = Schedule::default();
     // 同时使用 Query 和 Commands 的闭包 system
-    schedule.add_system(|(positions, mut commands): (Query<&Position>, Commands)| {
+    schedule.add_system(|positions: Query<&Position>, mut commands: Commands| {
         if positions.filter(|position| position.0 == 2).count() == 1 {
             commands.spawn(Marker);
         }
