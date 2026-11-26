@@ -1,9 +1,10 @@
 use variadics_please::{all_tuples, all_tuples_enumerated};
 
 use crate::{
-    Component,
+    Component, World,
     access::Access,
     entity::Entity,
+    error::RecsError,
     sparse_set::{SparseSetRawParts, SparseSetRawPartsMut},
     system::SystemParam,
     world::WorldCell,
@@ -49,14 +50,25 @@ impl<'w, T: QueryData> Iterator for Query<'w, T> {
 }
 
 unsafe impl<T: QueryData> SystemParam for Query<'_, T> {
-    type Param<'w> = Query<'w, T>;
+    type Param<'w, 's> = Query<'w, T>;
 
-    unsafe fn get_param<'w>(world: &WorldCell<'w>) -> Self::Param<'w> {
+    type State = ();
+
+    unsafe fn get_param<'w, 's>(
+        world: &WorldCell<'w>,
+        _state: &'s mut Self::State,
+    ) -> Self::Param<'w, 's> {
         unsafe { Query::init(world) }
     }
 
     fn init_access(access: &mut Access) {
         T::init_access(access);
+    }
+
+    fn init_state() -> Self::State {}
+
+    fn apply(_world: &mut World, _state: &mut Self::State) -> Vec<RecsError> {
+        vec![]
     }
 }
 

@@ -7,3 +7,5 @@ pub enum RecsError {
 }
 
 pub type RecsResult<T> = Result<T, RecsError>;
+
+pub type ErrorHandler = fn(RecsError);

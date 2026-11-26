@@ -6,7 +6,7 @@ use std::{
 use crate::{
     World,
     access::Access,
-    error::{RecsError, RecsResult},
+    error::{ErrorHandler, RecsError, RecsResult},
     executor::{MultiThreadedExecutor, SystemExecutor},
     system::{FunctionSystem, IntoSystem, System, SystemParam, SystemParamFunction},
 };
@@ -16,6 +16,7 @@ pub struct Schedule {
     plan: Vec<Vec<SystemId>>,
     executor: Box<dyn SystemExecutor>,
     dirty: bool,
+    error_handler: ErrorHandler,
 }
 
 impl Default for Schedule {
@@ -25,6 +26,7 @@ impl Default for Schedule {
             plan: vec![],
             executor: Box::new(MultiThreadedExecutor),
             dirty: false,
+            error_handler: |error| panic!("failed to run: {:?}", error),
         }
     }
 }
@@ -47,6 +49,7 @@ impl Schedule {
             graph,
             plan,
             executor,
+            error_handler,
             ..
         } = self;
 
@@ -54,7 +57,7 @@ impl Schedule {
             systems: &mut graph.systems,
             batches: plan,
         };
-        executor.run(&mut plan_view, world);
+        executor.run(&mut plan_view, world, *error_handler);
     }
 
     fn build_plan(&mut self) {
@@ -67,6 +70,10 @@ impl Schedule {
 
     pub fn set_executor(&mut self, executor: impl SystemExecutor + 'static) {
         self.executor = Box::new(executor);
+    }
+
+    pub fn set_error_handler(&mut self, handler: ErrorHandler) {
+        self.error_handler = handler;
     }
 }
 
@@ -542,7 +549,12 @@ mod tests {
     }
 
     impl SystemExecutor for RecordingExecutor {
-        fn run(&mut self, plan: &mut SystemPlan<'_>, world: &mut World) {
+        fn run(
+            &mut self,
+            plan: &mut SystemPlan<'_>,
+            world: &mut World,
+            _error_handler: ErrorHandler,
+        ) {
             let cell = WorldCell::new(world);
             let mut sizes = Vec::with_capacity(plan.batch_count());
             for index in 0..plan.batch_count() {

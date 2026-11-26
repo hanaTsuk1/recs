@@ -2,6 +2,7 @@
 
 mod access;
 mod bundle;
+mod command;
 mod component;
 mod entity;
 mod error;
@@ -13,8 +14,10 @@ mod system;
 mod world;
 
 pub use bundle::Bundle;
+pub use command::{Command, Commands};
 pub use component::{Component, ComponentRegistry};
 pub use entity::Entity;
+pub use error::{ErrorHandler, RecsError, RecsResult};
 pub use executor::{MultiThreadedExecutor, SingleThreadedExecutor};
 pub use query::Query;
 pub use schedule::{IntoSystemConfig, Schedule};

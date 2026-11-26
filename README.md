@@ -133,6 +133,24 @@ system要传递进线程，需要实现send
 
 component提供可读和可写，需要同时实现send + sync
 
+
+
+## command
+
+在之前的system中只能查询，并修改对应的值。而一些会破坏结构的操作不被允许，毕竟system在运行时结构发生变化，那所有的安全保证都将不复存在
+
+system被分为一批一批执行，只要在一批的所有system都执行完成后，对world进行修改，那么就不是问题
+
+将这些操作定为command，在system内执行只是将任务发送到队列，在一批system执行完成后，统一执行
+
+### state
+
+需要一个存储queue的位置，而且能对应system，这样就可以在一批system中找到要完成的command。而system本身是存在schedule里的，如果状态存在system内部不仅可以快速找到，还不用和world打交道
+
+**Commands**对应多种操作，它需要和Query一样实现SystemParam，每种command对应一个操作
+
+
+
 ## benchmark
 
 基准测试位于独立 workspace 子 crate `benches/`。运行方式和 workload 说明见 [benches/README.md](benches/README.md)。

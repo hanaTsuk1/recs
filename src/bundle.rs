@@ -5,7 +5,7 @@ use crate::{
     entity::Entity,
 };
 
-pub trait Bundle {
+pub trait Bundle: Send + 'static {
     fn insert(self, entity: Entity, registry: &mut ComponentRegistry);
 }
 
