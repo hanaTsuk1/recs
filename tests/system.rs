@@ -30,11 +30,7 @@ fn system_accepts_three_query_parameters() {
     world.spawn((Position(2), Velocity(20)));
 
     world.run_system(
-        |(positions, velocities, healths): (
-            Query<&mut Position>,
-            Query<&Velocity>,
-            Query<&Health>,
-        )| {
+        |positions: Query<&mut Position>, velocities: Query<&Velocity>, healths: Query<&Health>| {
             for position in positions {
                 position.0 += 1;
             }

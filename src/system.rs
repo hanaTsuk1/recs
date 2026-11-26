@@ -1,6 +1,6 @@
 use std::marker::PhantomData;
 
-use variadics_please::all_tuples_enumerated;
+use variadics_please::{all_tuples, all_tuples_enumerated};
 
 use crate::{
     World,
@@ -25,22 +25,14 @@ pub trait System: Send + 'static {
 ///
 /// 访问集合通过冲突检查后，`get_param` 及其返回值仍必须遵守 Rust 的引用别名规则
 pub unsafe trait SystemParam {
-    /// `'w` 是 world 的借用，`'s` 是参数自身状态的借用。
-    ///
-    /// 分成两个生命周期是为了让闭包 system 能同时使用 `Query` 和 `Commands`：
-    /// `Query` 只依赖 `'w`，`Commands` 只依赖 `'s`，元组里各位置的
-    /// 生命周期相互独立，闭包的生命周期推断才能匹配。
-    type Param<'w, 's>;
+    type Param<'w>;
 
     type State: Send + 'static;
 
     /// # Safety
     ///
     /// 调用前，`init_access` 声明的访问集合必须已通过冲突检查
-    unsafe fn get_param<'w, 's>(
-        world: &WorldCell<'w>,
-        state: &'s mut Self::State,
-    ) -> Self::Param<'w, 's>;
+    unsafe fn get_param<'w>(world: &WorldCell<'w>, state: &'w mut Self::State) -> Self::Param<'w>;
 
     fn init_access(access: &mut Access);
 
@@ -50,14 +42,14 @@ pub unsafe trait SystemParam {
 }
 
 unsafe impl SystemParam for () {
-    type Param<'w, 's> = ();
+    type Param<'w> = ();
 
     type State = ();
 
-    unsafe fn get_param<'w, 's>(
+    unsafe fn get_param<'w>(
         _world: &WorldCell<'w>,
-        _state: &'s mut Self::State,
-    ) -> Self::Param<'w, 's> {
+        _state: &'w mut Self::State,
+    ) -> Self::Param<'w> {
     }
 
     fn init_access(_access: &mut Access) {}
@@ -72,14 +64,14 @@ unsafe impl SystemParam for () {
 macro_rules! impl_system_param {
     ($(($n:tt, $T:ident)),*) => {
         unsafe impl<$($T: SystemParam),*> SystemParam for ($($T,)*) {
-            type Param<'w, 's> = ($($T::Param<'w, 's>,)*);
+            type Param<'w> = ($($T::Param<'w>,)*);
 
             type State = ($($T::State,)*);
 
-            unsafe fn get_param<'w, 's>(
+            unsafe fn get_param<'w>(
                 world: &WorldCell<'w>,
-                state: &'s mut Self::State,
-            ) -> Self::Param<'w, 's> {
+                state: &'w mut Self::State,
+            ) -> Self::Param<'w> {
                 (
                     $(unsafe { $T::get_param(world, &mut state.$n) },)*
                 )
@@ -164,39 +156,56 @@ pub trait IntoSystem<Marker> {
     fn into_system(self) -> Self::System;
 }
 
-impl<T, P: SystemParam + 'static> IntoSystem<fn(P)> for T
-where
-    for<'a> &'a mut T: FnMut(P),
-    T: SystemParamFunction<fn(P)> + Send + 'static,
-{
-    type System = FunctionSystem<T, fn(P)>;
+macro_rules! impl_into_system {
+    ($($T:ident),*) => {
+        impl<T, $($T),*> IntoSystem<fn($($T,)*)> for T
+        where
+            $(
+                $T: SystemParam + 'static,
+            )*
+            for<'a> &'a mut T: FnMut($($T),*),
+            T: SystemParamFunction<fn($($T),*)> + Send + 'static,
+        {
+            type System = FunctionSystem<T, fn($($T),*)>;
 
-    fn into_system(self) -> Self::System {
-        FunctionSystem {
-            func: self,
-            state: None,
-            _marker: PhantomData,
+            fn into_system(self) -> Self::System {
+                FunctionSystem {
+                    func: self,
+                    state: None,
+                    _marker: PhantomData,
+                }
+            }
         }
     }
 }
 
+all_tuples!(impl_into_system, 1, 16, T);
+
 pub trait SystemParamFunction<Marker> {
     type Param: SystemParam;
 
-    fn run<'w, 's>(&mut self, param: <Self::Param as SystemParam>::Param<'w, 's>);
+    fn run<'w>(&mut self, param: <Self::Param as SystemParam>::Param<'w>);
 }
 
-impl<T, P> SystemParamFunction<fn(P)> for T
-where
-    P: SystemParam,
-    T: for<'w, 's> FnMut(P::Param<'w, 's>),
-{
-    type Param = P;
+macro_rules! impl_system_param_function {
+    ($(($n:tt, $T:ident)),*) => {
+        impl<T, $($T),*> SystemParamFunction<fn($($T,)*)> for T
+        where
+            $(
+                $T: SystemParam,
+            )*
+            T: for<'w> FnMut($($T::Param<'w>,)*),
+        {
+            type Param = ($($T,)*);
 
-    fn run<'w, 's>(&mut self, param: <Self::Param as SystemParam>::Param<'w, 's>) {
-        self(param);
+            fn run<'w>(&mut self, param: <Self::Param as SystemParam>::Param<'w>) {
+                self($(param.$n,)*);
+            }
+        }
     }
 }
+
+all_tuples_enumerated!(impl_system_param_function, 1, 16, T);
 
 #[cfg(test)]
 mod tests {

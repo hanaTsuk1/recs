@@ -20,14 +20,11 @@ impl<'a> Commands<'a> {
 }
 
 unsafe impl SystemParam for Commands<'_> {
-    type Param<'w, 's> = Commands<'s>;
+    type Param<'w> = Commands<'w>;
 
     type State = CommandQueue;
 
-    unsafe fn get_param<'w, 's>(
-        _world: &WorldCell<'w>,
-        state: &'s mut Self::State,
-    ) -> Self::Param<'w, 's> {
+    unsafe fn get_param<'w>(_world: &WorldCell<'w>, state: &'w mut Self::State) -> Self::Param<'w> {
         Commands { queue: state }
     }
 
