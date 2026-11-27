@@ -21,7 +21,7 @@ pub use entity::Entity;
 pub use error::{ErrorHandler, RecsError, RecsResult};
 pub use executor::{MultiThreadedExecutor, SingleThreadedExecutor};
 pub use query::Query;
-pub use resource::Resource;
+pub use resource::{Res, ResMut, Resource};
 pub use schedule::{IntoSystemConfig, Schedule};
 pub use world::World;
 

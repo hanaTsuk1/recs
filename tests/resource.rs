@@ -1,6 +1,8 @@
 use std::sync::{Arc, Mutex};
 
-use recs::{Query, Resource, World};
+use recs::{
+    IntoSystemConfig, Query, Res, ResMut, Resource, Schedule, SingleThreadedExecutor, World,
+};
 
 #[derive(Resource, Debug, PartialEq)]
 struct Config {
@@ -143,5 +145,158 @@ fn resources_survive_unrelated_entity_changes() {
     assert_eq!(
         world.remove_resource::<Config>().unwrap(),
         Some(Config { value: 5 })
+    );
+}
+
+#[test]
+fn res_reads_resource_in_a_system() {
+    let mut world = World::new();
+    world.insert_resource(Config { value: 7 }).unwrap();
+
+    let observed = Arc::new(Mutex::new(None));
+    let observed_in_system = observed.clone();
+    world.run_system(move |config: Res<Config>| {
+        *observed_in_system.lock().unwrap() = Some(config.value);
+    });
+
+    assert_eq!(*observed.lock().unwrap(), Some(7));
+}
+
+#[test]
+fn resmut_mutates_resource_in_a_system() {
+    let mut world = World::new();
+    world.insert_resource(Config { value: 1 }).unwrap();
+
+    world.run_system(|mut config: ResMut<Config>| {
+        config.value += 1;
+    });
+
+    assert_eq!(
+        world.get_resource::<Config>().unwrap(),
+        Some(&Config { value: 2 })
+    );
+}
+
+#[test]
+fn res_and_resmut_for_different_resources_work_together() {
+    let mut world = World::new();
+    world.insert_resource(Config { value: 10 }).unwrap();
+    world.insert_resource(Counter(1)).unwrap();
+
+    world.run_system(|config: Res<Config>, mut counter: ResMut<Counter>| {
+        counter.0 += config.value as u32;
+    });
+
+    assert_eq!(world.get_resource::<Counter>().unwrap(), Some(&Counter(11)));
+}
+
+#[test]
+fn changes_made_by_resmut_are_visible_to_later_systems() {
+    let mut world = World::new();
+    world.insert_resource(Config { value: 0 }).unwrap();
+
+    let observed = Arc::new(Mutex::new(None));
+    let observed_in_reader = observed.clone();
+
+    let increment = |mut config: ResMut<Config>| config.value += 1;
+    let read = move |config: Res<Config>| {
+        *observed_in_reader.lock().unwrap() = Some(config.value);
+    };
+
+    let mut schedule = Schedule::default();
+    schedule.set_executor(SingleThreadedExecutor);
+    schedule.add_system(increment);
+    schedule.add_system(read.after(increment));
+
+    schedule.run(&mut world);
+
+    assert_eq!(*observed.lock().unwrap(), Some(1));
+}
+
+#[test]
+#[should_panic(expected = "resource does not exist")]
+fn res_without_inserted_resource_panics() {
+    let mut world = World::new();
+    world.run_system(|_config: Res<Config>| {});
+}
+
+#[test]
+fn query_can_mutate_a_resource_through_its_hidden_entity() {
+    let mut world = World::new();
+    world.insert_resource(Config { value: 1 }).unwrap();
+
+    // 资源是隐藏实体上的组件，所以 Query<&mut Config> 能改到它；
+    // 这也是 Res / Query 必须按同一类型声明冲突的原因
+    world.run_system(|configs: Query<&mut Config>| {
+        for config in configs {
+            config.value += 1;
+        }
+    });
+
+    assert_eq!(
+        world.get_resource::<Config>().unwrap(),
+        Some(&Config { value: 2 })
+    );
+}
+
+#[test]
+#[should_panic(expected = "query access conflict")]
+fn system_with_query_and_resmut_of_the_same_resource_panics() {
+    let mut world = World::new();
+    world.insert_resource(Config { value: 0 }).unwrap();
+
+    let mut schedule = Schedule::default();
+    schedule.set_executor(SingleThreadedExecutor);
+    // 同一个资源既被 Query 可变借用、又被 ResMut 可变借用，system 自身就冲突
+    schedule.add_system(|(_configs, _config): (Query<&mut Config>, ResMut<Config>)| {});
+
+    schedule.run(&mut world);
+}
+
+#[test]
+fn system_with_query_and_res_of_the_same_resource_is_allowed() {
+    let mut world = World::new();
+    world.insert_resource(Config { value: 5 }).unwrap();
+
+    let observed = Arc::new(Mutex::new(None));
+    let observed_in_system = observed.clone();
+
+    let mut schedule = Schedule::default();
+    schedule.set_executor(SingleThreadedExecutor);
+    // 同一个资源只读两次，可以放在同一个 system 里
+    schedule.add_system(move |(configs, config): (Query<&Config>, Res<Config>)| {
+        let queried: i32 = configs.map(|config| config.value).sum();
+        *observed_in_system.lock().unwrap() = Some((queried, config.value));
+    });
+
+    schedule.run(&mut world);
+
+    assert_eq!(*observed.lock().unwrap(), Some((5, 5)));
+}
+
+#[test]
+fn resmut_and_query_writes_to_the_same_resource_are_serialized() {
+    let mut world = World::new();
+    world.insert_resource(Config { value: 1 }).unwrap();
+
+    let set = |mut config: ResMut<Config>| config.value = 10;
+    let bump = |configs: Query<&mut Config>| {
+        for config in configs {
+            config.value += 1;
+        }
+    };
+
+    let mut schedule = Schedule::default();
+    schedule.set_executor(SingleThreadedExecutor);
+    schedule.add_system(set);
+    // 两个都是写，必须拆批；after 保证先 set 再 bump
+    schedule.add_system(bump.after(set));
+
+    schedule.run(&mut world);
+
+    // 如果两者被放进同一批并发执行，结果会随执行顺序丢失更新
+    assert_eq!(
+        world.get_resource::<Config>().unwrap(),
+        Some(&Config { value: 11 })
     );
 }

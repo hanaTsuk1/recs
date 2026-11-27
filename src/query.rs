@@ -1,10 +1,9 @@
 use variadics_please::{all_tuples, all_tuples_enumerated};
 
 use crate::{
-    Component, World,
+    Component,
     access::Access,
     entity::Entity,
-    error::RecsError,
     sparse_set::{SparseSetRawParts, SparseSetRawPartsMut},
     system::SystemParam,
     world::WorldCell,
@@ -63,10 +62,6 @@ unsafe impl<T: QueryData> SystemParam for Query<'_, T> {
     }
 
     fn init_state() -> Self::State {}
-
-    fn apply(_world: &mut World, _state: &mut Self::State) -> Vec<RecsError> {
-        vec![]
-    }
 }
 
 /// # Safety

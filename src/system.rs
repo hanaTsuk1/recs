@@ -38,7 +38,9 @@ pub unsafe trait SystemParam {
 
     fn init_state() -> Self::State;
 
-    fn apply(world: &mut World, state: &mut Self::State) -> Vec<RecsError>;
+    fn apply(_world: &mut World, _state: &mut Self::State) -> Vec<RecsError> {
+        vec![]
+    }
 }
 
 unsafe impl SystemParam for () {
@@ -55,10 +57,6 @@ unsafe impl SystemParam for () {
     fn init_access(_access: &mut Access) {}
 
     fn init_state() -> Self::State {}
-
-    fn apply(_world: &mut World, _state: &mut Self::State) -> Vec<RecsError> {
-        vec![]
-    }
 }
 
 macro_rules! impl_system_param {

@@ -429,13 +429,19 @@ mod tests {
     use std::sync::{Arc, Mutex};
 
     use super::*;
-    use crate::{Component, Query, world::WorldCell};
+    use crate::{Component, Query, Res, ResMut, Resource, world::WorldCell};
 
     #[derive(Component)]
     struct Position(i32);
 
     #[derive(Component)]
     struct Velocity(i32);
+
+    #[derive(Resource)]
+    struct Settings(u32);
+
+    #[derive(Resource)]
+    struct Volume(u32);
 
     #[test]
     fn plan_groups_independent_systems_in_a_single_batch() {
@@ -537,6 +543,105 @@ mod tests {
                 vec![SystemId(1)],
             ]
         );
+    }
+
+    #[test]
+    fn plan_groups_two_res_readers_in_a_single_batch() {
+        let mut schedule = Schedule::default();
+        schedule.add_system(|_: Res<Settings>| {});
+        schedule.add_system(|_: Res<Settings>| {});
+
+        schedule.build_plan();
+
+        assert_eq!(schedule.plan.len(), 1);
+        assert_eq!(schedule.plan[0].len(), 2);
+    }
+
+    #[test]
+    fn plan_groups_resmut_of_different_resources_in_a_single_batch() {
+        let mut schedule = Schedule::default();
+        schedule.add_system(|_: ResMut<Settings>| {});
+        schedule.add_system(|_: ResMut<Volume>| {});
+
+        schedule.build_plan();
+
+        assert_eq!(schedule.plan.len(), 1);
+        assert_eq!(schedule.plan[0].len(), 2);
+    }
+
+    #[test]
+    fn plan_separates_resmut_from_res_of_the_same_resource() {
+        let mut schedule = Schedule::default();
+        schedule.add_system(|_: Res<Settings>| {});
+        schedule.add_system(|_: ResMut<Settings>| {});
+
+        schedule.build_plan();
+
+        // 写和读不能同批，否则多线程执行器会并发拿到同一个资源的可变/不可变引用
+        assert_eq!(schedule.plan.len(), 2);
+        assert!(schedule.plan.iter().all(|batch| batch.len() == 1));
+    }
+
+    #[test]
+    fn plan_separates_two_resmut_of_the_same_resource() {
+        let mut schedule = Schedule::default();
+        schedule.add_system(|_: ResMut<Settings>| {});
+        schedule.add_system(|_: ResMut<Settings>| {});
+
+        schedule.build_plan();
+
+        assert_eq!(schedule.plan.len(), 2);
+        assert!(schedule.plan.iter().all(|batch| batch.len() == 1));
+    }
+
+    #[test]
+    fn plan_separates_res_from_a_write_query_of_the_same_type() {
+        let mut schedule = Schedule::default();
+        schedule.add_system(|_: Res<Settings>| {});
+        schedule.add_system(|_: Query<&mut Settings>| {});
+
+        schedule.build_plan();
+
+        // 资源存在隐藏实体上，Query 能遍历到同一份数据，读写的组合必须拆批
+        assert_eq!(schedule.plan.len(), 2);
+        assert!(schedule.plan.iter().all(|batch| batch.len() == 1));
+    }
+
+    #[test]
+    fn plan_separates_resmut_from_a_read_query_of_the_same_type() {
+        let mut schedule = Schedule::default();
+        schedule.add_system(|_: ResMut<Settings>| {});
+        schedule.add_system(|_: Query<&Settings>| {});
+
+        schedule.build_plan();
+
+        assert_eq!(schedule.plan.len(), 2);
+        assert!(schedule.plan.iter().all(|batch| batch.len() == 1));
+    }
+
+    #[test]
+    fn plan_separates_resmut_from_a_write_query_of_the_same_type() {
+        let mut schedule = Schedule::default();
+        schedule.add_system(|_: ResMut<Settings>| {});
+        schedule.add_system(|_: Query<&mut Settings>| {});
+
+        schedule.build_plan();
+
+        assert_eq!(schedule.plan.len(), 2);
+        assert!(schedule.plan.iter().all(|batch| batch.len() == 1));
+    }
+
+    #[test]
+    fn plan_groups_res_and_a_read_query_of_the_same_type() {
+        let mut schedule = Schedule::default();
+        schedule.add_system(|_: Res<Settings>| {});
+        schedule.add_system(|_: Query<&Settings>| {});
+
+        schedule.build_plan();
+
+        // 两个都只读，可以同批
+        assert_eq!(schedule.plan.len(), 1);
+        assert_eq!(schedule.plan[0].len(), 2);
     }
 
     #[test]

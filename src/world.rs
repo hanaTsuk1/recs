@@ -139,6 +139,23 @@ impl<'w> WorldCell<'w> {
         let components = unsafe { &(*self.world).components };
         unsafe { components.raw_parts_mut::<T>() }
     }
+
+    unsafe fn get_resource_entity<R: Resource>(&self) -> Option<Entity> {
+        let resource_entities = unsafe { &(*self.world).resource_entities };
+        resource_entities.get::<R>()
+    }
+
+    pub unsafe fn get_resource<R: Resource>(&self) -> Option<&'w R> {
+        let raw_parts = unsafe { self.raw_parts::<R>()? };
+        let entity = unsafe { self.get_resource_entity::<R>()? };
+        raw_parts.get(entity)
+    }
+
+    pub unsafe fn get_resource_mut<R: Resource>(&self) -> Option<&'w mut R> {
+        let raw_parts = unsafe { self.raw_parts_mut::<R>()? };
+        let entity = unsafe { self.get_resource_entity::<R>()? };
+        unsafe { raw_parts.get_mut(entity) }
+    }
 }
 
 unsafe impl Sync for WorldCell<'_> {}
