@@ -1,12 +1,14 @@
 use std::marker::PhantomData;
 
 use crate::{
+    Resource,
     access::validate_access_or_panic,
     bundle::Bundle,
     component::{Component, ComponentRegistry},
     entity::{Entities, Entity},
     error::{RecsError, RecsResult},
     query::{Query, QueryData},
+    resource::ResourceEntities,
     sparse_set::{SparseSetRawParts, SparseSetRawPartsMut},
     system::{IntoSystem, System},
 };
@@ -15,6 +17,7 @@ use crate::{
 pub struct World {
     entities: Entities,
     pub(crate) components: ComponentRegistry,
+    resource_entities: ResourceEntities,
 }
 
 impl World {
@@ -76,6 +79,42 @@ impl World {
         let cell = WorldCell::new(self);
         system.run(&cell);
     }
+
+    pub fn insert_resource<R: Resource>(&mut self, resource: R) -> RecsResult<()> {
+        if let Some(entity) = self.resource_entities.get::<R>() {
+            self.insert(entity, resource)
+        } else {
+            let entity = self.spawn(resource);
+            self.resource_entities.insert::<R>(entity);
+            Ok(())
+        }
+    }
+
+    pub fn remove_resource<R: Resource>(&mut self) -> RecsResult<Option<R>> {
+        if let Some(entity) = self.resource_entities.remove::<R>() {
+            let resource = self.remove::<R>(entity)?;
+            self.despawn(entity)?;
+            Ok(resource)
+        } else {
+            Ok(None)
+        }
+    }
+
+    pub fn get_resource<R: Resource>(&self) -> RecsResult<Option<&R>> {
+        if let Some(entity) = self.resource_entities.get::<R>() {
+            self.get(entity)
+        } else {
+            Ok(None)
+        }
+    }
+
+    pub fn get_resource_mut<R: Resource>(&mut self) -> RecsResult<Option<&mut R>> {
+        if let Some(entity) = self.resource_entities.get::<R>() {
+            self.get_mut(entity)
+        } else {
+            Ok(None)
+        }
+    }
 }
 
 pub struct WorldCell<'w> {
@@ -106,13 +145,16 @@ unsafe impl Sync for WorldCell<'_> {}
 
 #[cfg(test)]
 mod tests {
-    use crate::Component;
+    use crate::{Component, Resource};
 
     use super::*;
     use std::assert_matches;
 
     #[derive(Debug, PartialEq, Component)]
     struct Position(i32, i32);
+
+    #[derive(Debug, PartialEq, Resource)]
+    struct Config(u32);
 
     #[derive(Debug, PartialEq, Component)]
     struct Health(u32);
@@ -127,6 +169,24 @@ mod tests {
             registry.insert(entity, self.position);
             registry.insert(entity, self.health);
         }
+    }
+
+    #[test]
+    fn remove_resource_reclaims_the_hidden_entity() {
+        let mut world = World::new();
+        world.insert_resource(Config(1)).unwrap();
+
+        let entity = world
+            .resource_entities
+            .get::<Config>()
+            .expect("insert_resource should register an entity");
+        assert!(world.entities.contains(entity));
+
+        world.remove_resource::<Config>().unwrap();
+
+        // 值被取走，隐藏实体也应当被回收
+        assert!(!world.entities.contains(entity));
+        assert!(world.get_resource::<Config>().unwrap().is_none());
     }
 
     #[test]

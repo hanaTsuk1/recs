@@ -8,6 +8,7 @@ mod entity;
 mod error;
 mod executor;
 mod query;
+mod resource;
 mod schedule;
 mod sparse_set;
 mod system;
@@ -20,7 +21,8 @@ pub use entity::Entity;
 pub use error::{ErrorHandler, RecsError, RecsResult};
 pub use executor::{MultiThreadedExecutor, SingleThreadedExecutor};
 pub use query::Query;
+pub use resource::Resource;
 pub use schedule::{IntoSystemConfig, Schedule};
 pub use world::World;
 
-pub use recs_macro::Component;
+pub use recs_macro::{Component, Resource};
